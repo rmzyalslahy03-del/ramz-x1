@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>صندوق الوارد | Ramz-X</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 70px;
+            transition: background 0.3s;
+        }
+        body.dark { background-color: #000; }
+        body.light { background-color: #f5f5f5; }
+        body.light .inbox-container,
+        body.light .header,
+        body.light .main-tabs,
+        body.light .list-item,
+        body.light .chat-modal,
+        body.light .chat-header,
+        body.light .chat-input-area,
+        body.light .message-bubble.received,
+        body.light .search-container,
+        body.light .story-bar,
+        body.light .users-list-container,
+        body.light .notifications-container,
+        body.light .group-chat-container,
+        body.light .create-group-card {
+            background-color: #fff;
+            color: #000;
+        }
+        body.light .header h1,
+        body.light .item-name,
+        body.light .chat-name,
+        body.light .story-name {
+            color: #000;
+        }
+        body.light .item-detail,
+        body.light .item-time,
+        body.light .user-bio,
+        body.light .notification-text {
+            color: #555;
+        }
+        body.light .main-tab {
+            color: #555;
+        }
+        body.light .main-tab.active {
+            color: #ff0050;
+        }
+        body.light .list-item {
+            border-bottom-color: #e0e0e0;
+        }
+        body.light .message-bubble.received {
+            background: #e0e0e0;
+            color: #000;
+        }
+        body.light .search-input {
+            background: #f0f0f0;
+            color: #000;
+            border-color: #ccc;
+        }
+        body.light .user-search-result,
+        body.light .user-item {
+            background: #f9f9f9;
+            border-color: #eee;
+        }
+        body.light .story-card {
+            background: #f5f5f5;
+        }
+        body.light .notification-item {
+            border-bottom-color: #eee;
+        }
+        .inbox-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #000;
+            min-height: calc(100vh - 70px);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #000;
+            border-bottom: 0.5px solid #2c2c2c;
+        }
+        .back-btn, .new-chat-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .header h1 {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .main-tabs {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-bottom: 0.5px solid #2c2c2c;
+            background: #000;
+        }
+        .main-tab {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .main-tab.active {
+            color: white;
+            border-bottom-color: #ff0050;
+        }
+        .main-tab .badge {
+            background: #ff0050;
+            border-radius: 20px;
+            padding: 0px 6px;
+            font-size: 10px;
+            color: white;
+            margin-right: 4px;
+        }
+        .content-area {
+            padding: 0;
+        }
+        /* شريط القصص */
+        .story-bar {
+            background: #111;
+            padding: 12px 8px;
+            border-bottom: 0.5px solid #2c2c2c;
+            overflow-x: auto;
+            white-space: nowrap;
+            display: flex;
+            gap: 12px;
+            scrollbar-width: thin;
+        }
+        .story-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            position: relative;
+            min-width: 70px;
+        }
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ff0050;
+            padding: 2px;
+        }
+        .story-add {
+            border: 2px dashed #aaa;
+            background: #2c2c2c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #ff0050;
+        }
+        .story-name {
+            font-size: 11px;
+            color: #aaa;
+            text-align: center;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .story-upload-icon {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: #ff0050;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+        /* قائمة المستخدمين (الأصدقاء) */
+        .users-list-container {
+            padding: 8px 0;
+        }
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 14px;
+            border-bottom: 0.5px solid #1f1f1f;
+            transition: 0.2s;
+        }
+        .user-item:hover { background: #111; }
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .user-info {
+            flex: 1;
+        }
+        .user-name {
+            font-weight: 700;
+            color: white;
+            font-size: 15px;
+        }
+        .user-bio {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+        .user-stats {
+            font-size: 11px;
+            color: #777;
+            margin-top: 2px;
+        }
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .user-action-btn {
+            background: none;
+            border: 1px solid #ff0050;
+            border-radius: 30px;
+            padding: 6px 12px;
+            font-size: 11px;
+            color: #ff0050;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .user-action-btn.following {
+            background: #ff0050;
+            color: white;
+        }
+        .user-action-btn:hover {
+            background: rgba(255,0,80,0.2);
+        }
+        /* الإشعارات */
+        .notifications-container {
+            padding: 8px 0;
+        }
+        .notification-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 12px;
+            border-bottom: 0.5px solid #1f1f1f;
+            transition: 0.2s;
+        }
+        .notification-item.unread {
+            background: rgba(255,0,80,0.1);
+        }
+        .notification-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .notification-content {
+            flex: 1;
+        }
+        .notification-text {
+            color: white;
+            font-size: 13px;
+        }
+        .notification-time {
+            font-size: 10px;
+            color: #777;
+            margin-top: 4px;
+        }
+        .notification-actions button {
+            background: none;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        /* الدردشة الجماعية */
+        .group-chat-container {
+            padding: 16px;
+        }
+        .create-group-card {
+            background: #111;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .group-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 30px;
+            background: #2c2c2c;
+            border: none;
+            color: white;
+            margin-bottom: 12px;
+        }
+        .group-select-users {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+        }
+        .group-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            cursor: pointer;
+        }
+        .group-user.selected {
+            background: rgba(255,0,80,0.2);
+            border-radius: 12px;
+        }
+        .group-list {
+            margin-top: 20px;
+        }
+        .group-card {
+            background: #111;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .group-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #ff0050;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        .group-info {
+            flex: 1;
+        }
+        .group-name {
+            font-weight: bold;
+            color: white;
+        }
+        .group-meta {
+            font-size: 11px;
+            color: #777;
+        }
+        /* محادثات فردية */
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 14px;
+            border-bottom: 0.5px solid #1f1f1f;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .list-item:active { background: #111; }
+        .item-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2c2c2c;
+        }
+        .item-info { flex: 1; }
+        .item-name {
+            font-weight: 700;
+            color: white;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .item-detail {
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+        .item-time {
+            font-size: 11px;
+            color: #777;
+        }
+        .badge {
+            background: #ff0050;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        /* مودال المحادثة الفردية */
+        .chat-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .chat-modal.open { transform: translateX(0); }
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #000;
+            border-bottom: 0.5px solid #2c2c2c;
+            gap: 12px;
+        }
+        .chat-back {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .chat-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .chat-name {
+            flex: 1;
+            font-weight: bold;
+            color: white;
+            font-size: 17px;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            position: relative;
+        }
+        .message-wrapper.sent { align-self: flex-end; }
+        .message-wrapper.received { align-self: flex-start; }
+        .message-bubble {
+            padding: 10px 14px;
+            border-radius: 20px;
+            font-size: 15px;
+            word-wrap: break-word;
+        }
+        .received .message-bubble {
+            background: #2c2c2c;
+            color: white;
+            border-bottom-left-radius: 4px;
+        }
+        .sent .message-bubble {
+            background: #ff0050;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .media-attachment {
+            max-width: 200px;
+            border-radius: 16px;
+            margin-top: 6px;
+            cursor: pointer;
+        }
+        .reply-to {
+            font-size: 12px;
+            color: #ccc;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-bottom: 4px;
+        }
+        .message-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+            font-size: 11px;
+            color: #777;
+        }
+        .action-icon {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .action-icon:hover {
+            color: #ff0050;
+        }
+        .chat-input-area {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #111;
+            border-top: 0.5px solid #2c2c2c;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .attach-btn, .emoji-btn {
+            background: #2c2c2c;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .chat-input {
+            flex: 1;
+            background: #2c2c2c;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+        .send-btn {
+            background: #ff0050;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .emoji-picker {
+            display: none;
+            position: absolute;
+            bottom: 70px;
+            left: 16px;
+            background: #2c2c2c;
+            border-radius: 30px;
+            padding: 6px 12px;
+            gap: 12px;
+            z-index: 1100;
+        }
+        .emoji-picker.active { display: flex; }
+        .emoji-option {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .search-container {
+            padding: 12px 16px;
+            background: #000;
+            border-bottom: 0.5px solid #2c2c2c;
+            display: none;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 30px;
+            border: 1px solid #2c2c2c;
+            background: #1a1a1a;
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            outline: none;
+        }
+        .user-search-results {
+            margin-top: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .user-search-result {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 16px;
+            background: #111;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #2c2c2c;
+        }
+        .bottom-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #ddd;
+            z-index: 30;
+        }
+        body.dark .bottom-footer {
+            background-color: #111;
+            border-top-color: #2c2c2c;
+        }
+        .footer-button {
+            background: none;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #333;
+            text-decoration: none;
+        }
+        body.dark .footer-button { color: #aaa; }
+        .footer-button:hover {
+            color: #ff0050;
+            transform: scale(1.05);
+        }
+        .icon { font-size: 22px; display: block; margin-bottom: 4px; }
+        .label { font-size: 11px; }
+        #globalToast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            font-size: 14px;
+            border-left: 4px solid #fe2c55;
+        }
+        @media (max-width: 640px) {
+            .message-wrapper { max-width: 90%; }
+            .story-avatar { width: 50px; height: 50px; }
+            .story-name { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="inbox-container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='home.html'"><i class="fas fa-arrow-right"></i></button>
+        <h1>صندوق الوارد</h1>
+        <button class="new-chat-btn" id="newChatBtn"><i class="fas fa-edit"></i></button>
+    </div>
+
+    <!-- شريط البحث (يظهر عند الضغط على زر المحادثة الجديدة) -->
+    <div id="searchContainer" class="search-container" style="display: none;">
+        <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن مستخدم...">
+        <div id="searchResults" class="user-search-results"></div>
+    </div>
+
+    <div class="main-tabs" id="mainTabs">
+        <button class="main-tab active" data-main="chats">💬 المحادثات</button>
+        <button class="main-tab" data-main="friends">👥 الأصدقاء</button>
+        <button class="main-tab" data-main="notifications">🔔 الإشعارات <span id="notifBadge" class="badge" style="display:none;">0</span></button>
+        <button class="main-tab" data-main="groups">👥 مجموعات</button>
+        <button class="main-tab" data-main="privacy">🔒 خصوصية الظهور</button>
+    </div>
+
+    <div id="mainContent" class="content-area"></div>
+</div>
+
+<div class="bottom-footer">
+    <a href="home.html" class="footer-button"><i class="fas fa-home icon"></i><div class="label">الرئيسية</div></a>
+    <a href="explore.html" class="footer-button"><i class="fas fa-compass icon"></i><div class="label">استكشاف</div></a>
+    <a href="create-post.html" class="footer-button"><i class="fas fa-plus-circle icon"></i><div class="label">إنشاء</div></a>
+    <a href="inbox.html" class="footer-button"><i class="fas fa-inbox icon"></i><div class="label">صندوق الوارد</div></a>
+    <a href="profile.html" class="footer-button"><i class="fas fa-user icon"></i><div class="label">الملف الشخصي</div></a>
+</div>
+
+<!-- مودال المحادثة الفردية -->
+<div id="chatModal" class="chat-modal">
+    <div class="chat-header">
+        <button class="chat-back" id="closeChatBtn"><i class="fas fa-arrow-right"></i></button>
+        <img id="chatAvatar" class="chat-avatar" src="">
+        <div id="chatName" class="chat-name"></div>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+        <button class="attach-btn" id="attachBtn"><i class="fas fa-paperclip"></i></button>
+        <button class="emoji-btn" id="emojiBtn"><i class="far fa-smile-wink"></i></button>
+        <input type="text" id="messageInput" class="chat-input" placeholder="اكتب رسالة...">
+        <button id="sendMessageBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+    <div class="emoji-picker" id="emojiPicker">
+        <span class="emoji-option" data-emoji="❤️">❤️</span>
+        <span class="emoji-option" data-emoji="😂">😂</span>
+        <span class="emoji-option" data-emoji="😮">😮</span>
+        <span class="emoji-option" data-emoji="😢">😢</span>
+        <span class="emoji-option" data-emoji="😡">😡</span>
+        <span class="emoji-option" data-emoji="👍">👍</span>
+    </div>
+</div>
+
+<div id="globalToast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="common.js"></script>
+<script>
+    // ===================== المتغيرات العامة =====================
+    let currentUser = null;
+    let activeChatId = null;
+    let replyingToMessage = null;
+    let currentMediaFile = null;
+    let subscriptions = [];
+    let isSearchVisible = false;
+    let currentMainTab = 'chats';
+    let allUsers = [];
+    let usersPage = 0;
+    let loadingUsers = false;
+    let hasMoreUsers = true;
+    let currentSort = 'friends';
+    let currentSearchQuery = '';
+    let stories = [];
+    let unreadNotifCount = 0;
+    let notificationSoundEnabled = true;
+
+    // ===================== دوال مساعدة =====================
+    function playNotificationBeep() {
+        if (!notificationSoundEnabled) return;
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.frequency.value = 880;
+            gainNode.gain.value = 0.1;
+            oscillator.type = 'sine';
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.5);
+            oscillator.stop(audioCtx.currentTime + 0.5);
+            audioCtx.resume();
+        } catch(e) { console.log(e); }
+    }
+
+    // ===================== دوال المحادثات الفردية (الحالية) =====================
+    async function fetchConversations() {
+        if (!currentUser) return [];
+        const { data: messages, error } = await supabase
+            .from('messages')
+            .select(`
+                id, text, image, created_at, read,
+                sender:sender_id (id, username, avatar),
+                receiver:receiver_id (id, username, avatar)
+            `)
+            .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+            .order('created_at', { ascending: false });
+        if (error) { console.error(error); return []; }
+        const convMap = new Map();
+        for (let msg of messages) {
+            const other = (msg.sender.id === currentUser.id) ? msg.receiver : msg.sender;
+            if (!convMap.has(other.id)) {
+                convMap.set(other.id, {
+                    id: other.id,
+                    name: other.username,
+                    avatar: other.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg',
+                    lastMessage: msg.text || (msg.image ? '📷 صورة' : ''),
+                    lastTime: msg.created_at,
+                    unread: 0
+                });
+            }
+            if (msg.receiver.id === currentUser.id && !msg.read) {
+                convMap.get(other.id).unread++;
+            }
+        }
+        const convs = Array.from(convMap.values());
+        convs.sort((a,b) => new Date(b.lastTime) - new Date(a.lastTime));
+        return convs;
+    }
+
+    async function fetchMessages(otherUserId) {
+        const { data, error } = await supabase
+            .from('messages')
+            .select('*')
+            .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUser.id})`)
+            .order('created_at', { ascending: true });
+        if (error) { showToast(error.message, true); return []; }
+        const unreadIds = data.filter(m => m.receiver_id === currentUser.id && !m.read).map(m => m.id);
+        if (unreadIds.length) await supabase.from('messages').update({ read: true }).in('id', unreadIds);
+        return data.map(m => ({
+            id: m.id,
+            text: m.text,
+            sender: m.sender_id === currentUser.id ? 'me' : 'other',
+            time: new Date(m.created_at).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }),
+            image: m.image,
+            replyTo: m.reply_to
+        }));
+    }
+
+    async function sendMessageTo(otherUserId, text, image) {
+        if (!text && !image) return;
+        const newMsg = {
+            sender_id: currentUser.id,
+            receiver_id: otherUserId,
+            text: text || '',
+            image: image || null,
+            reply_to: replyingToMessage,
+            created_at: new Date().toISOString(),
+            read: false
+        };
+        const { error } = await supabase.from('messages').insert(newMsg);
+        if (error) showToast(error.message, true);
+        replyingToMessage = null;
+        // إنشاء إشعار للمستقبل
+        if (otherUserId !== currentUser.id) {
+            await createNotification(otherUserId, 'private_message', currentUser.id, null, null, null, `${currentUser.username} أرسل لك رسالة جديدة`);
+        }
+    }
+
+    async function uploadImageToSupabase(file) {
+        if (!file) return null;
+        const fileExt = file.name.split('.').pop();
+        const fileName = `message_${Date.now()}_${Math.random().toString(36)}.${fileExt}`;
+        const { data, error } = await supabase.storage
+            .from('ramz-images')
+            .upload(`messages/${fileName}`, file);
+        if (error) { console.error("خطأ في رفع الصورة:", error); return null; }
+        const { data: { publicUrl } } = supabase.storage
+            .from('ramz-images')
+            .getPublicUrl(`messages/${fileName}`);
+        return publicUrl;
+    }
+
+    function subscribeToMessages() {
+        if (!currentUser) return;
+        const subscription = supabase
+            .channel('messages-channel')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `receiver_id=eq.${currentUser.id}` }, (payload) => {
+                if (activeChatId && (payload.new.sender_id === activeChatId)) refreshMessages();
+                renderChatsTab();
+                // إشعار صوتي للرسائل الجديدة
+                if (payload.new.sender_id !== currentUser.id) playNotificationBeep();
+            })
+            .subscribe();
+        subscriptions.push(subscription);
+    }
+
+    async function refreshMessages() {
+        if (!activeChatId) return;
+        const msgs = await fetchMessages(activeChatId);
+        renderChatMessages(msgs);
+    }
+
+    async function renderChatsTab() {
+        const convs = await fetchConversations();
+        const container = document.getElementById('mainContent');
+        if (!convs.length) {
+            container.innerHTML = '<div class="empty-state"><i class="far fa-comment-dots"></i><p>لا توجد محادثات</p><p style="font-size:12px;">اضغط على زر القلم لبدء محادثة جديدة</p></div>';
+            return;
+        }
+        let html = '';
+        for (let c of convs) {
+            html += `
+                <div class="list-item" data-chat-id="${c.id}">
+                    <img src="${c.avatar}" class="item-avatar" onerror="this.src='https://randomuser.me/api/portraits/lego/1.jpg'">
+                    <div class="item-info">
+                        <div class="item-name">${escapeHtml(c.name)}</div>
+                        <div class="item-detail">${escapeHtml(c.lastMessage.substring(0, 50))}${c.lastMessage.length > 50 ? '...' : ''}</div>
+                    </div>
+                    <div class="item-time">${new Date(c.lastTime).toLocaleString()}</div>
+                    ${c.unread ? `<div class="badge">${c.unread}</div>` : ''}
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+        document.querySelectorAll('[data-chat-id]').forEach(el => {
+            el.addEventListener('click', () => openChat(el.dataset.chatId));
+        });
+    }
+
+    async function openChat(otherUserId) {
+        activeChatId = otherUserId;
+        const { data: otherUser, error } = await supabase.from('users').select('username, avatar').eq('id', otherUserId).single();
+        if (error) { showToast(error.message, true); return; }
+        document.getElementById('chatName').innerText = otherUser.username;
+        document.getElementById('chatAvatar').src = otherUser.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg';
+        const messages = await fetchMessages(otherUserId);
+        renderChatMessages(messages);
+        document.getElementById('chatModal').classList.add('open');
+        replyingToMessage = null;
+        currentMediaFile = null;
+        document.getElementById('messageInput').placeholder = "اكتب رسالة...";
+    }
+
+    function renderChatMessages(messages) {
+        const container = document.getElementById('chatMessages');
+        container.innerHTML = '';
+        for (let msg of messages) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper ' + msg.sender;
+            wrapper.setAttribute('data-msg-id', msg.id);
+            let replyHtml = '';
+            if (msg.replyTo) replyHtml = `<div class="reply-to"><i class="fas fa-reply"></i> رد على رسالة</div>`;
+            let mediaHtml = '';
+            if (msg.image) mediaHtml = `<img src="${msg.image}" class="media-attachment" onclick="window.open('${msg.image}')">`;
+            wrapper.innerHTML = `
+                ${replyHtml}
+                <div class="message-bubble">${escapeHtml(msg.text)}${mediaHtml}</div>
+                <div class="message-actions">
+                    <span class="action-icon" data-action="reply"><i class="fas fa-reply"></i> رد</span>
+                </div>
+            `;
+            container.appendChild(wrapper);
+        }
+        container.scrollTop = container.scrollHeight;
+        document.querySelectorAll('.action-icon[data-action="reply"]').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const msgId = parseInt(btn.closest('.message-wrapper').dataset.msgId);
+                replyingToMessage = msgId;
+                document.getElementById('messageInput').placeholder = "رد على رسالة...";
+                document.getElementById('messageInput').focus();
+            };
+        });
+    }
+
+    async function sendMessage() {
+        let text = document.getElementById('messageInput').value.trim();
+        if (!text && !currentMediaFile) return;
+        if (!activeChatId) return;
+        let image = null;
+        if (currentMediaFile && currentMediaFile.file) {
+            showToast("جاري رفع الصورة...");
+            image = await uploadImageToSupabase(currentMediaFile.file);
+            if (!image) { showToast("فشل رفع الصورة", true); return; }
+        }
+        await sendMessageTo(activeChatId, text, image);
+        document.getElementById('messageInput').value = '';
+        replyingToMessage = null;
+        currentMediaFile = null;
+        document.getElementById('messageInput').placeholder = "اكتب رسالة...";
+        const messages = await fetchMessages(activeChatId);
+        renderChatMessages(messages);
+        renderChatsTab();
+    }
+
+    function closeChat() {
+        document.getElementById('chatModal').classList.remove('open');
+        activeChatId = null;
+    }
+
+    // ===================== دوال الأصدقاء (القصص، قائمة المستخدمين) =====================
+    async function fetchStories() {
+        const { data, error } = await supabase
+            .from('stories')
+            .select('*, users:user_id (id, username, avatar)')
+            .gte('expires_at', new Date().toISOString())
+            .order('created_at', { ascending: false });
+        if (error) return [];
+        return data;
+    }
+
+    async function createStory(mediaFile, text) {
+        let mediaUrl = null;
+        if (mediaFile) {
+            const ext = mediaFile.name.split('.').pop();
+            const fileName = `story_${Date.now()}_${Math.random().toString(36)}.${ext}`;
+            const { data, error } = await supabase.storage
+                .from('ramz-images')
+                .upload(`stories/${fileName}`, mediaFile);
+            if (!error) mediaUrl = SUPABASE_URL + "/storage/v1/object/public/ramz-images/stories/" + fileName;
+        }
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 24);
+        const { error } = await supabase.from('stories').insert({
+            user_id: currentUser.id,
+            media_url: mediaUrl,
+            text: text || '',
+            expires_at: expiresAt.toISOString(),
+            created_at: new Date().toISOString()
+        });
+        if (error) showToast(error.message, true);
+        else { showToast("✨ تم نشر قصتك!"); renderFriendsTab(); }
+    }
+
+    async function loadStories() {
+        stories = await fetchStories();
+        const storyBar = document.getElementById('storyBar');
+        storyBar.innerHTML = `
+            <div class="story-item" id="addStoryBtn">
+                <div class="story-avatar story-add"><i class="fas fa-plus"></i></div>
+                <div class="story-name">قصتك</div>
+                <div class="story-upload-icon"><i class="fas fa-camera"></i></div>
+            </div>
+        `;
+        stories.forEach(s => {
+            if (s.user_id !== currentUser.id) {
+                storyBar.innerHTML += `
+                    <div class="story-item" data-story-id="${s.id}">
+                        <img src="${s.users?.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" class="story-avatar">
+                        <div class="story-name">${s.users?.username || 'مستخدم'}</div>
+                    </div>
+                `;
+            }
+        });
+        document.getElementById('addStoryBtn')?.addEventListener('click', () => {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*,video/*';
+            fileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                const text = prompt("أضف نصاً للقصة (اختياري):");
+                await createStory(file, text || '');
+            };
+            fileInput.click();
+        });
+    }
+
+    async function fetchUsers(page = 0, sort = 'friends', search = '') {
+        let query = supabase.from('users').select('*', { count: 'exact' });
+        if (search) query = query.or(`username.ilike.%${search}%,full_name.ilike.%${search}%`);
+        if (sort === 'friends') query = query.order('last_seen', { ascending: false });
+        else if (sort === 'popular') query = query.order('followers_count', { ascending: false });
+        else if (sort === 'nearby') query = query.order('created_at', { ascending: false });
+        const { data, error } = await query.range(page * 20, page * 20 + 19);
+        if (error) return [];
+        return data;
+    }
+
+    async function loadUsers(reset = true) {
+        if (reset) { usersPage = 0; allUsers = []; hasMoreUsers = true; }
+        if (loadingUsers || !hasMoreUsers) return;
+        loadingUsers = true;
+        const newUsers = await fetchUsers(usersPage, currentSort, currentSearchQuery);
+        if (newUsers.length < 20) hasMoreUsers = false;
+        allUsers = [...allUsers, ...newUsers];
+        renderUsersList();
+        usersPage++;
+        loadingUsers = false;
+    }
+
+    async function renderUsersList() {
+        const container = document.getElementById('usersListContainer');
+        if (allUsers.length === 0 && !hasMoreUsers) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>لا يوجد مستخدمون</p></div>';
+            return;
+        }
+        let html = '';
+        for (let u of allUsers) {
+            if (u.id === currentUser.id) continue;
+            const isFollowing = await checkIfFollowing(currentUser.id, u.id);
+            html += `
+                <div class="user-item" data-user-id="${u.id}">
+                    <img src="${u.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" class="user-avatar">
+                    <div class="user-info">
+                        <div class="user-name">${escapeHtml(u.full_name || u.username)}</div>
+                        <div class="user-bio">${escapeHtml(u.bio || '')}</div>
+                        <div class="user-stats">📊 ${formatNumber(u.followers_count)} متابع · ⭐ ${formatNumber(u.following_count)} يتابع</div>
+                    </div>
+                    <div class="user-actions">
+                        <button class="user-action-btn follow-btn ${isFollowing ? 'following' : ''}" data-id="${u.id}">${isFollowing ? 'متابَع' : 'متابعة'}</button>
+                        <button class="user-action-btn invite-btn" data-id="${u.id}">دعوة</button>
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+        document.querySelectorAll('.follow-btn').forEach(btn => {
+            btn.onclick = (e) => { e.stopPropagation(); toggleFollow(btn.dataset.id, btn); };
+        });
+        document.querySelectorAll('.invite-btn').forEach(btn => {
+            btn.onclick = (e) => { e.stopPropagation(); sendFollowRequest(btn.dataset.id); };
+        });
+        document.querySelectorAll('.user-item').forEach(el => {
+            el.onclick = () => window.location.href = `public-profile.html?user=${el.dataset.userId}`;
+        });
+    }
+
+    async function checkIfFollowing(followerId, followingId) {
+        const { data, error } = await supabase.from('follows').select('id').eq('follower_id', followerId).eq('following_id', followingId).single();
+        return !!data;
+    }
+
+    async function toggleFollow(targetId, btn) {
+        const isFollowing = btn.classList.contains('following');
+        if (!isFollowing) {
+            const { error } = await supabase.from('follows').insert({ follower_id: currentUser.id, following_id: targetId });
+            if (error) { showToast(error.message, true); return; }
+            btn.classList.add('following');
+            btn.innerText = 'متابَع';
+            await createNotification(targetId, 'follow', currentUser.id, null, null, null, `${currentUser.username} بدأ متابعتك`);
+            showToast('✅ تمت المتابعة');
+        } else {
+            const { error } = await supabase.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', targetId);
+            if (error) { showToast(error.message, true); return; }
+            btn.classList.remove('following');
+            btn.innerText = 'متابعة';
+            showToast('✅ تم إلغاء المتابعة');
+        }
+    }
+
+    async function sendFollowRequest(targetId) {
+        const { error } = await supabase.from('follow_requests').insert({ sender_id: currentUser.id, receiver_id: targetId });
+        if (error) showToast(error.message, true);
+        else {
+            await createNotification(targetId, 'follow_request', currentUser.id, null, null, null, `${currentUser.username} طلب متابعتك`);
+            showToast('📨 تم إرسال طلب المتابعة');
+        }
+    }
+
+    async function renderFriendsTab() {
+        const container = document.getElementById('mainContent');
+        container.innerHTML = `
+            <div class="story-bar" id="storyBar"></div>
+            <div class="users-list-container" id="usersListContainer">
+                <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> جاري التحميل...</div>
+            </div>
+            <div id="loadingTrigger" style="height: 20px;"></div>
+        `;
+        await loadStories();
+        currentSearchQuery = '';
+        currentSort = 'friends';
+        await loadUsers(true);
+        setupInfiniteScroll();
+    }
+
+    function setupInfiniteScroll() {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !loadingUsers && hasMoreUsers) loadUsers(false);
+        }, { threshold: 0.1 });
+        const trigger = document.getElementById('loadingTrigger');
+        if (trigger) observer.observe(trigger);
+    }
+
+    // ===================== دوال الإشعارات المركزية =====================
+    async function createNotification(userId, type, actorId, postId=null, storyId=null, groupId=null, customMessage=null) {
+        const { data: actor } = await supabase.from('users').select('username').eq('id', actorId).single();
+        const actorName = actor?.username || 'مستخدم';
+        let message = customMessage;
+        if (!message) {
+            switch(type) {
+                case 'like': message = `${actorName} أعجب بمنشورك`; break;
+                case 'comment': message = `${actorName} علق على منشورك`; break;
+                case 'favorite': message = `${actorName} أضاف منشورك إلى مفضلاته`; break;
+                case 'repost': message = `${actorName} أعاد نشر منشورك`; break;
+                case 'follow': message = `${actorName} بدأ متابعتك`; break;
+                case 'follow_request': message = `${actorName} طلب متابعتك`; break;
+                case 'story': message = `${actorName} شارك قصة جديدة`; break;
+                case 'new_post': message = `${actorName} نشر منشوراً جديداً`; break;
+                case 'profile_update': message = `${actorName} غيّر صورة ملفه الشخصي`; break;
+                case 'private_message': message = `${actorName} أرسل لك رسالة جديدة`; break;
+                default: message = `${actorName} تفاعل مع محتواك`;
+            }
+        }
+        const { error } = await supabase.from('notifications').insert({
+            user_id: userId, type: type, actor_id: actorId, post_id: postId, story_id: storyId, group_id: groupId,
+            message: message, is_read: false, created_at: new Date().toISOString()
+        });
+        if (!error && userId === currentUser.id) {
+            unreadNotifCount++;
+            document.getElementById('notifBadge').innerText = unreadNotifCount;
+            document.getElementById('notifBadge').style.display = 'inline-block';
+            const thresholds = [10,30,50,100];
+            if (thresholds.includes(unreadNotifCount)) playNotificationBeep();
+        }
+    }
+
+    async function fetchUserNotifications() {
+        const { data, error } = await supabase
+            .from('notifications')
+            .select('*, actor:actor_id (id, username, avatar)')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+        if (error) return [];
+        unreadNotifCount = data.filter(n => !n.is_read).length;
+        document.getElementById('notifBadge').innerText = unreadNotifCount;
+        document.getElementById('notifBadge').style.display = unreadNotifCount ? 'inline-block' : 'none';
+        return data;
+    }
+
+    async function markNotificationRead(notifId) {
+        await supabase.from('notifications').update({ is_read: true }).eq('id', notifId);
+    }
+
+    async function renderNotificationsTab() {
+        const container = document.getElementById('mainContent');
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> جاري التحميل...</div>';
+        const notifs = await fetchUserNotifications();
+        if (notifs.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="far fa-bell"></i><p>لا توجد إشعارات</p></div>';
+            return;
+        }
+        let html = '<div class="notifications-container">';
+        for (let n of notifs) {
+            const actorName = n.actor?.username || 'مستخدم';
+            html += `
+                <div class="notification-item ${!n.is_read ? 'unread' : ''}" data-id="${n.id}">
+                    <img src="${n.actor?.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" class="notification-avatar">
+                    <div class="notification-content">
+                        <div class="notification-text">${escapeHtml(n.message)}</div>
+                        <div class="notification-time">${new Date(n.created_at).toLocaleString('ar')}</div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="mark-read-btn" data-id="${n.id}">${!n.is_read ? 'تحديد كمقروء' : ''}</button>
+                    </div>
+                </div>
+            `;
+        }
+        html += '</div>';
+        container.innerHTML = html;
+        document.querySelectorAll('.mark-read-btn').forEach(btn => {
+            btn.onclick = async (e) => { e.stopPropagation(); await markNotificationRead(btn.dataset.id); renderNotificationsTab(); };
+        });
+    }
+
+    // ===================== دوال المجموعات (الدردشة الجماعية) =====================
+    async function createGroup(name, memberIds) {
+        const { data: group, error } = await supabase.from('groups').insert({ name: name, created_by: currentUser.id, created_at: new Date().toISOString() }).select().single();
+        if (error) { showToast(error.message, true); return null; }
+        const members = [...new Set([currentUser.id, ...memberIds])];
+        const membersInsert = members.map(uid => ({ group_id: group.id, user_id: uid }));
+        const { error: membersError } = await supabase.from('group_members').insert(membersInsert);
+        if (membersError) { showToast(membersError.message, true); return null; }
+        return group;
+    }
+
+    async function fetchUserGroups() {
+        const { data, error } = await supabase.from('group_members').select('groups:group_id (id, name, created_by, created_at)').eq('user_id', currentUser.id);
+        if (error) return [];
+        return data.map(d => d.groups);
+    }
+
+    async function renderGroupsTab() {
+        const container = document.getElementById('mainContent');
+        container.innerHTML = `
+            <div class="group-chat-container">
+                <div class="create-group-card">
+                    <input type="text" id="groupName" class="group-input" placeholder="اسم المجموعة">
+                    <div id="groupUsersSelect" class="group-select-users"></div>
+                    <button id="createGroupBtn" class="user-action-btn" style="width:100%;">إنشاء مجموعة</button>
+                </div>
+                <div id="groupsList" class="group-list"></div>
+            </div>
+        `;
+        const { data: usersList } = await supabase.from('users').select('id, username, avatar').neq('id', currentUser.id).limit(50);
+        const selectDiv = document.getElementById('groupUsersSelect');
+        let usersHtml = '';
+        usersList?.forEach(u => {
+            usersHtml += `<div class="group-user" data-id="${u.id}">
+                <img src="${u.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" style="width:32px;height:32px;border-radius:50%;">
+                <span>${escapeHtml(u.username)}</span>
+            </div>`;
+        });
+        selectDiv.innerHTML = usersHtml;
+        let selectedUsers = [];
+        document.querySelectorAll('.group-user').forEach(el => {
+            el.onclick = () => {
+                el.classList.toggle('selected');
+                const id = el.dataset.id;
+                if (selectedUsers.includes(id)) selectedUsers = selectedUsers.filter(i => i !== id);
+                else selectedUsers.push(id);
+            };
+        });
+        document.getElementById('createGroupBtn').onclick = async () => {
+            const name = document.getElementById('groupName').value.trim();
+            if (!name || selectedUsers.length === 0) { showToast('اسم المجموعة ومستخدمين مطلوبين', true); return; }
+            const group = await createGroup(name, selectedUsers);
+            if (group) { showToast('تم إنشاء المجموعة'); renderGroupsTab(); }
+        };
+        const myGroups = await fetchUserGroups();
+        const groupsListDiv = document.getElementById('groupsList');
+        if (!myGroups.length) groupsListDiv.innerHTML = '<div class="empty-state">لا توجد مجموعات</div>';
+        else {
+            let groupsHtml = '';
+            for (let g of myGroups) {
+                groupsHtml += `<div class="group-card" data-group-id="${g.id}">
+                    <div class="group-avatar"><i class="fas fa-users"></i></div>
+                    <div class="group-info">
+                        <div class="group-name">${escapeHtml(g.name)}</div>
+                        <div class="group-meta">مجموعة خاصة</div>
+                    </div>
+                </div>`;
+            }
+            groupsListDiv.innerHTML = groupsHtml;
+            document.querySelectorAll('.group-card').forEach(card => {
+                card.onclick = () => window.location.href = `group-chat.html?group=${card.dataset.groupId}`;
+            });
+        }
+    }
+
+    // تبويب الخصوصية
+    function renderPrivacy() {
+        let onlineStatus = localStorage.getItem('onlineStatus') || 'online';
+        const html = `
+            <div style="padding:20px;">
+                <div style="background:#1a1a1a; border-radius:16px; padding:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h3 style="color:white;">حالة الظهور للأصدقاء</h3>
+                            <p style="color:#aaa;">${onlineStatus === 'online' ? 'نشط (علامة زرقاء)' : 'مخفي (علامة رمادية)'}</p>
+                        </div>
+                        <div><i class="fas fa-circle" style="color:${onlineStatus === 'online' ? '#4ade80' : '#333'}; font-size:32px;"></i></div>
+                    </div>
+                    <button id="toggleStatusBtn" style="background:#ff0050; border:none; padding:10px; border-radius:30px; color:white; width:100%; margin-top:16px; cursor:pointer;">
+                        ${onlineStatus === 'online' ? 'تبديل إلى الوضع المخفي' : 'تبديل إلى النشط'}
+                    </button>
+                </div>
+            </div>
+        `;
+        document.getElementById('mainContent').innerHTML = html;
+        document.getElementById('toggleStatusBtn')?.addEventListener('click', () => {
+            const newStatus = onlineStatus === 'online' ? 'offline' : 'online';
+            localStorage.setItem('onlineStatus', newStatus);
+            renderPrivacy();
+            showToast(`تم التبديل إلى ${newStatus === 'online' ? 'الوضع النشط' : 'الوضع المخفي'}`);
+        });
+    }
+
+    // ===================== دوال البحث عن مستخدمين لبدء محادثة =====================
+    async function searchUsersForChat(query) {
+        if (!query || query.length < 2) { document.getElementById('searchResults').innerHTML = ''; return; }
+        const { data, error } = await supabase.from('users').select('id, username, full_name, avatar')
+            .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`).neq('id', currentUser.id).limit(10);
+        if (error) return;
+        const resultsDiv = document.getElementById('searchResults');
+        if (!data.length) { resultsDiv.innerHTML = '<div style="padding:10px; text-align:center; color:#aaa;">لا توجد نتائج</div>'; return; }
+        resultsDiv.innerHTML = '';
+        for (let user of data) {
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'user-search-result';
+            resultDiv.innerHTML = `
+                <img src="${user.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" class="search-result-avatar">
+                <div class="search-result-info">
+                    <div class="search-result-name">${escapeHtml(user.full_name || user.username)}</div>
+                    <div class="search-result-username">@${escapeHtml(user.username)}</div>
+                </div>
+                <i class="fas fa-comment" style="color:#ff0050;"></i>
+            `;
+            resultDiv.addEventListener('click', () => {
+                openChat(user.id);
+                document.getElementById('searchContainer').style.display = 'none';
+                isSearchVisible = false;
+                document.getElementById('searchInput').value = '';
+                document.getElementById('searchResults').innerHTML = '';
+            });
+            resultsDiv.appendChild(resultDiv);
+        }
+    }
+
+    // ===================== تحكم التبويبات العامة =====================
+    async function renderMainTab() {
+        if (currentMainTab === 'chats') await renderChatsTab();
+        else if (currentMainTab === 'friends') await renderFriendsTab();
+        else if (currentMainTab === 'notifications') await renderNotificationsTab();
+        else if (currentMainTab === 'groups') await renderGroupsTab();
+        else if (currentMainTab === 'privacy') renderPrivacy();
+    }
+
+    function setMainTab(tabId) {
+        currentMainTab = tabId;
+        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.main-tab[data-main="${tabId}"]`).classList.add('active');
+        renderMainTab();
+    }
+
+    // ===================== أحداث وتهيئة الصفحة =====================
+    document.querySelectorAll('.main-tab').forEach(tab => {
+        tab.addEventListener('click', () => setMainTab(tab.dataset.main));
+    });
+    document.getElementById('closeChatBtn').addEventListener('click', closeChat);
+    document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
+    document.getElementById('messageInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+    document.getElementById('newChatBtn').addEventListener('click', () => {
+        const searchContainer = document.getElementById('searchContainer');
+        if (isSearchVisible) {
+            searchContainer.style.display = 'none';
+            isSearchVisible = false;
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+        } else {
+            searchContainer.style.display = 'block';
+            isSearchVisible = true;
+            document.getElementById('searchInput').focus();
+        }
+    });
+    const searchInputGlobal = document.getElementById('searchInput');
+    let searchTimeout;
+    searchInputGlobal.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => { searchUsersForChat(e.target.value.trim()); }, 300);
+    });
+    document.getElementById('attachBtn').addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (file) { currentMediaFile = { file: file }; showToast("تم اختيار صورة، اضغط إرسال"); }
+        };
+        input.click();
+    });
+    document.getElementById('emojiBtn').addEventListener('click', () => {
+        document.getElementById('emojiPicker').classList.toggle('active');
+    });
+    document.querySelectorAll('.emoji-option').forEach(emoji => {
+        emoji.addEventListener('click', () => {
+            document.getElementById('messageInput').value += emoji.dataset.emoji;
+            document.getElementById('emojiPicker').classList.remove('active');
+            document.getElementById('messageInput').focus();
+        });
+    });
+    document.addEventListener('click', (e) => {
+        const btn = document.getElementById('emojiBtn');
+        const picker = document.getElementById('emojiPicker');
+        if (btn && picker && !btn.contains(e.target) && !picker.contains(e.target)) picker.classList.remove('active');
+    });
+    function applyTheme() {
+        if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark');
+        else document.body.classList.add('light');
+    }
+    applyTheme();
+
+    (async () => {
+        await initDB();
+        currentUser = await checkSession();
+        if (!currentUser) return;
+        subscribeToMessages();
+        setMainTab('chats');
+        // الاستماع للإشعارات الجديدة في الوقت الحقيقي
+        supabase
+            .channel('notifications-channel')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${currentUser.id}` }, payload => {
+                if (payload.new.user_id === currentUser.id) {
+                    unreadNotifCount++;
+                    document.getElementById('notifBadge').innerText = unreadNotifCount;
+                    document.getElementById('notifBadge').style.display = 'inline-block';
+                    if (currentMainTab === 'notifications') renderNotificationsTab();
+                }
+            })
+            .subscribe();
+    })();
+</script>
+</body>
+</html>
