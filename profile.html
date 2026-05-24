@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>الملف الشخصي | Ramz-X</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 70px;
+            transition: background 0.3s;
+        }
+        body.dark { background-color: #000; }
+        body.light { background-color: #f5f5f5; }
+        body.light .profile-container,
+        body.light .header,
+        body.light .profile-header,
+        body.light .tabs,
+        body.light .settings-panel,
+        body.light .post-item,
+        body.light .bottom-sheet,
+        body.light .modal-content {
+            background-color: #fff;
+            color: #000;
+        }
+        body.light .header h1,
+        body.light .item-name,
+        body.light .profile-name,
+        body.light .post-title {
+            color: #000;
+        }
+        body.light .item-detail,
+        body.light .profile-bio,
+        body.light .profile-stats span,
+        body.light .post-excerpt {
+            color: #555;
+        }
+        body.light .tab {
+            color: #555;
+        }
+        body.light .tab.active {
+            color: #ff0050;
+        }
+        body.light .settings-input {
+            background: #f0f0f0;
+            border-color: #ccc;
+            color: #000;
+        }
+        .profile-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #000;
+            min-height: 100vh;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #000;
+            border-bottom: 0.5px solid #2c2c2c;
+        }
+        .back-btn, .settings-header-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .header h1 {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .profile-header {
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-bottom: 0.5px solid #2c2c2c;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2c2c2c;
+            margin-bottom: 12px;
+            border: 3px solid #ff0050;
+            cursor: pointer;
+        }
+        .profile-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 4px;
+        }
+        .profile-username {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 12px;
+        }
+        .profile-bio {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 16px;
+            max-width: 300px;
+        }
+        .profile-stats {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .profile-stats span {
+            font-size: 14px;
+            color: #aaa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-stats strong {
+            font-size: 18px;
+            color: white;
+        }
+        .social-links {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 12px 0 6px;
+        }
+        .social-links a {
+            color: #aaa;
+            font-size: 20px;
+            transition: 0.2s;
+        }
+        .social-links a:hover {
+            color: #ff0050;
+        }
+        .unique-url {
+            font-size: 12px;
+            color: #777;
+            margin-top: 4px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 0.5px solid #2c2c2c;
+            background: #000;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .tab.active {
+            color: white;
+            border-bottom-color: #ff0050;
+        }
+        .content-area {
+            padding: 16px;
+        }
+        .posts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .post-item {
+            background: #111;
+            border-radius: 16px;
+            padding: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #2c2c2c;
+        }
+        body.light .post-item {
+            background: #f9f9f9;
+            border: 1px solid #eee;
+        }
+        .post-item:hover {
+            transform: translateY(-2px);
+            border-color: #ff0050;
+        }
+        .post-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: #2c2c2c;
+        }
+        .post-title {
+            font-weight: bold;
+            color: white;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+        .post-excerpt {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+        .post-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #777;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        .settings-panel {
+            background: #111;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        .settings-group {
+            margin-bottom: 20px;
+        }
+        .settings-label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+        body.light .settings-label {
+            color: #000;
+        }
+        .settings-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #2c2c2c;
+            background: #1a1a1a;
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            margin-bottom: 12px;
+        }
+        .settings-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .settings-save-btn {
+            background: #ff0050;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .avatar-upload {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .avatar-preview-small {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .file-input-label {
+            background: #2c2c2c;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 12px;
+            color: white;
+        }
+        .guest-badge {
+            background: #f59e0b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-top: 8px;
+            color: #000;
+            font-weight: bold;
+        }
+        .upgrade-guest-btn {
+            background: #3b82f6;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+        }
+        /* شريط التقدم */
+        .progress-toast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            border-radius: 40px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .progress-toast .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #2c2c2c;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-toast .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #ff0050;
+            transition: width 0.2s linear;
+        }
+        .progress-toast .progress-text {
+            font-size: 13px;
+            color: white;
+        }
+        body.light .progress-toast { background: #333; }
+        .bottom-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #ddd;
+            z-index: 30;
+        }
+        body.dark .bottom-footer {
+            background-color: #111;
+            border-top-color: #2c2c2c;
+        }
+        .footer-button {
+            background: none;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #333;
+            text-decoration: none;
+        }
+        body.dark .footer-button {
+            color: #aaa;
+        }
+        .footer-button:hover {
+            color: #ff0050;
+            transform: scale(1.05);
+        }
+        .icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .label {
+            font-size: 11px;
+            color: #333;
+        }
+        body.dark .label {
+            color: #aaa;
+        }
+        #globalToast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            font-size: 14px;
+            border-left: 4px solid #fe2c55;
+        }
+        @media (max-width: 640px) {
+            .profile-avatar { width: 80px; height: 80px; }
+            .profile-name { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='home.html'"><i class="fas fa-arrow-right"></i></button>
+        <h1>الملف الشخصي</h1>
+        <button class="settings-header-btn" id="settingsHeaderBtn"><i class="fas fa-cog"></i></button>
+    </div>
+
+    <div id="profileHeader" class="profile-header"></div>
+
+    <div class="tabs" id="profileTabs">
+        <button class="tab active" data-tab="posts">منشوراتي</button>
+        <button class="tab" data-tab="favorites">المفضلات</button>
+        <button class="tab" id="settingsTabBtn" data-tab="settings">الإعدادات</button>
+    </div>
+
+    <div id="profileContent" class="content-area"></div>
+</div>
+
+<div class="bottom-footer">
+    <a href="home.html" class="footer-button"><i class="fas fa-home icon"></i><div class="label">الرئيسية</div></a>
+    <a href="explore.html" class="footer-button"><i class="fas fa-compass icon"></i><div class="label">استكشاف</div></a>
+    <a href="create-post.html" class="footer-button"><i class="fas fa-plus-circle icon"></i><div class="label">إنشاء</div></a>
+    <a href="inbox.html" class="footer-button"><i class="fas fa-inbox icon"></i><div class="label">صندوق الوارد</div></a>
+    <a href="profile.html" class="footer-button"><i class="fas fa-user icon"></i><div class="label">الملف الشخصي</div></a>
+</div>
+
+<div id="globalToast"></div>
+<div id="progressToast" class="progress-toast">
+    <div class="progress-text" id="progressText">جاري التنفيذ...</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="common.js"></script>
+<script>
+    let currentUser = null;
+    let currentTab = 'posts';
+
+    // شريط التقدم
+    function showProgress(message, duration = 1500) {
+        const toast = document.getElementById('progressToast');
+        const textEl = document.getElementById('progressText');
+        const fillEl = document.getElementById('progressFill');
+        textEl.innerText = message;
+        toast.style.opacity = '1';
+        fillEl.style.width = '0%';
+        const startTime = Date.now();
+        const interval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const percent = Math.min(100, (elapsed / duration) * 100);
+            fillEl.style.width = percent + '%';
+            if (percent >= 100) {
+                clearInterval(interval);
+                setTimeout(() => { toast.style.opacity = '0'; }, 200);
+            }
+        }, 20);
+    }
+
+    // جلب إجمالي الإعجابات للمستخدم
+    async function fetchUserTotalLikes(userId) {
+        const { data: posts, error } = await supabase
+            .from('posts')
+            .select('likes_count')
+            .eq('author_id', userId)
+            .eq('hidden', false);
+        if (error) return 0;
+        return posts.reduce((sum, p) => sum + (p.likes_count || 0), 0);
+    }
+
+    async function fetchUserPosts(userId) {
+        const { data, error } = await supabase
+            .from('posts')
+            .select('*')
+            .eq('author_id', userId)
+            .eq('hidden', false)
+            .order('created_at', { ascending: false });
+        if (error) return [];
+        return data;
+    }
+
+    async function fetchUserFavorites(userId) {
+        const { data: favs, error } = await supabase
+            .from('favorites')
+            .select('post_id')
+            .eq('user_id', userId);
+        if (error) return [];
+        const postIds = favs.map(f => f.post_id);
+        if (postIds.length === 0) return [];
+        const { data: posts, error: postsError } = await supabase
+            .from('posts')
+            .select('*')
+            .in('id', postIds)
+            .eq('hidden', false);
+        if (postsError) return [];
+        return posts;
+    }
+
+    // عرض معلومات الملف الشخصي
+    async function renderProfile() {
+        if (!currentUser) return;
+        const totalLikes = await fetchUserTotalLikes(currentUser.id);
+        const social = currentUser.social || {};
+        let socialHtml = '';
+        for (let [platform, value] of Object.entries(social)) {
+            let icon = '';
+            if (platform === 'email') icon = 'fas fa-envelope';
+            else if (platform === 'facebook') icon = 'fab fa-facebook';
+            else if (platform === 'twitter') icon = 'fab fa-twitter';
+            else if (platform === 'instagram') icon = 'fab fa-instagram';
+            else if (platform === 'tiktok') icon = 'fab fa-tiktok';
+            else if (platform === 'youtube') icon = 'fab fa-youtube';
+            else icon = 'fas fa-link';
+            socialHtml += `<a href="#" onclick="showToast('رابط ${platform}: ${value}')"><i class="${icon}"></i></a>`;
+        }
+        const guestBadge = currentUser.is_guest ? `<div class="guest-badge"><i class="fas fa-clock"></i> حساب تجريبي - ينتهي بعد 6 أشهر</div>` : '';
+        const headerHtml = `
+            <img src="${currentUser.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" class="profile-avatar" id="profileAvatarImg" onerror="this.src='https://randomuser.me/api/portraits/lego/1.jpg'">
+            <div class="profile-name">${escapeHtml(currentUser.full_name || currentUser.username)} <i class="fas fa-check-circle" style="color:#3b82f6;"></i></div>
+            <div class="profile-username">@${currentUser.unique_name || currentUser.username}</div>
+            <div class="profile-bio">${escapeHtml(currentUser.bio || '')}</div>
+            ${guestBadge}
+            <div class="profile-stats">
+                <span><strong>${formatNumber(currentUser.followers_count || 0)}</strong> متابع</span>
+                <span><strong>${formatNumber(currentUser.following_count || 0)}</strong> متبعهم</span>
+                <span><strong>${formatNumber(totalLikes)}</strong> إعجاب</span>
+            </div>
+            <div class="social-links">${socialHtml}</div>
+            <div class="unique-url">🔗 الرابط الفريد: /user/${currentUser.unique_name || currentUser.username}</div>
+        `;
+        document.getElementById('profileHeader').innerHTML = headerHtml;
+    }
+
+    // عرض المحتوى (منشورات / مفضلات / إعدادات)
+    async function renderContent() {
+        const container = document.getElementById('profileContent');
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-pulse"></i><p>جاري التحميل...</p></div>';
+        if (!currentUser) return;
+
+        if (currentTab === 'posts') {
+            const posts = await fetchUserPosts(currentUser.id);
+            if (posts.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="far fa-newspaper"></i><p>لا توجد منشورات</p></div>';
+                return;
+            }
+            let html = '<div class="posts-grid">';
+            for (let p of posts) {
+                const shortContent = p.content.length > 100 ? p.content.substring(0, 100) + '...' : p.content;
+                html += `
+                    <div class="post-item" data-post-id="${p.id}">
+                        ${p.image ? `<img class="post-img" src="${p.image}" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">` : ''}
+                        <div class="post-title">${escapeHtml(p.title)} <span style="font-size:10px; background:#2c2c2c; padding:2px 8px; border-radius:20px;">${p.category || 'عام'}</span></div>
+                        <div class="post-excerpt">${escapeHtml(shortContent)}</div>
+                        <div class="post-meta">
+                            <span><i class="fas fa-heart"></i> ${formatNumber(p.likes_count)}</span>
+                            <span><i class="fas fa-comment"></i> ${p.comments_count || 0}</span>
+                            <span><i class="fas fa-eye"></i> ${formatNumber(p.views_count || 0)}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            container.innerHTML = html;
+            document.querySelectorAll('.post-item').forEach(el => {
+                el.addEventListener('click', () => window.location.href = `home.html?post=${el.dataset.postId}`);
+            });
+        }
+        else if (currentTab === 'favorites') {
+            const favPosts = await fetchUserFavorites(currentUser.id);
+            if (favPosts.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="far fa-star"></i><p>لا توجد منشورات في المفضلات</p></div>';
+                return;
+            }
+            let html = '<div class="posts-grid">';
+            for (let p of favPosts) {
+                const shortContent = p.content.length > 100 ? p.content.substring(0, 100) + '...' : p.content;
+                html += `
+                    <div class="post-item" data-post-id="${p.id}">
+                        ${p.image ? `<img class="post-img" src="${p.image}" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">` : ''}
+                        <div class="post-title">${escapeHtml(p.title)} <span style="font-size:10px; background:#2c2c2c; padding:2px 8px; border-radius:20px;">${p.category || 'عام'}</span></div>
+                        <div class="post-excerpt">${escapeHtml(shortContent)}</div>
+                        <div class="post-meta">
+                            <span><i class="fas fa-heart"></i> ${formatNumber(p.likes_count)}</span>
+                            <span><i class="fas fa-comment"></i> ${p.comments_count || 0}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            container.innerHTML = html;
+            document.querySelectorAll('.post-item').forEach(el => {
+                el.addEventListener('click', () => window.location.href = `home.html?post=${el.dataset.postId}`);
+            });
+        }
+        else if (currentTab === 'settings') {
+            const user = currentUser;
+            const social = user.social || {};
+            const isGuest = user.is_guest === true;
+            const expiryDate = user.expiry_date ? new Date(user.expiry_date).toLocaleDateString('ar') : '';
+            const guestMessage = isGuest ? `<div class="guest-badge" style="background:#ff0050; margin-bottom:12px;">⚠️ حساب تجريبي صالح حتى ${expiryDate} - قم بتوثيقه للاستمرار</div>` : '';
+            
+            const html = `
+                <div class="settings-panel">
+                    ${guestMessage}
+                    <div class="settings-group">
+                        <label class="settings-label">الصورة الرمزية</label>
+                        <div class="avatar-upload">
+                            <img src="${user.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" class="avatar-preview-small" id="avatarPreview">
+                            <label class="file-input-label">
+                                <i class="fas fa-upload"></i> رفع صورة
+                                <input type="file" id="avatarUpload" accept="image/*" style="display:none;">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <label class="settings-label">السيرة الذاتية</label>
+                        <textarea id="bioInput" class="settings-input settings-textarea" rows="3">${escapeHtml(user.bio || '')}</textarea>
+                    </div>
+                    <div class="settings-group">
+                        <label class="settings-label">روابط التواصل (اترك فارغاً إن لم ترغب)</label>
+                        <input type="text" id="socialEmail" class="settings-input" placeholder="البريد الإلكتروني" value="${escapeHtml(social.email || '')}">
+                        <input type="text" id="socialFacebook" class="settings-input" placeholder="فيسبوك" value="${escapeHtml(social.facebook || '')}">
+                        <input type="text" id="socialTwitter" class="settings-input" placeholder="تويتر" value="${escapeHtml(social.twitter || '')}">
+                        <input type="text" id="socialInstagram" class="settings-input" placeholder="انستغرام" value="${escapeHtml(social.instagram || '')}">
+                        <input type="text" id="socialTiktok" class="settings-input" placeholder="تيك توك" value="${escapeHtml(social.tiktok || '')}">
+                        <input type="text" id="socialYoutube" class="settings-input" placeholder="يوتيوب" value="${escapeHtml(social.youtube || '')}">
+                    </div>
+                    <div class="settings-group">
+                        <label class="settings-label">الرابط الفريد (اسم المستخدم)</label>
+                        <input type="text" id="uniqueNameInput" class="settings-input" placeholder="بدون مسافات" value="${escapeHtml(user.unique_name || '')}">
+                    </div>
+                    <button class="settings-save-btn" id="saveSettingsBtn">💾 حفظ التغييرات</button>
+                    
+                    ${isGuest ? `
+                        <button class="upgrade-guest-btn" id="upgradeGuestBtn">
+                            📧 توثيق الحساب (حافظ على بياناتك)
+                        </button>
+                    ` : ''}
+                    
+                    <button class="settings-save-btn" id="logoutBtn" style="background: #dc2626; margin-top: 15px;">
+                        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                    </button>
+                </div>
+            `;
+            container.innerHTML = html;
+            
+            // رفع الصورة
+            const fileInput = document.getElementById('avatarUpload');
+            const avatarPreview = document.getElementById('avatarPreview');
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => { avatarPreview.src = ev.target.result; };
+                    reader.readAsDataURL(file);
+                }
+            };
+            // حفظ الإعدادات
+            document.getElementById('saveSettingsBtn').onclick = async () => {
+                showProgress('جاري حفظ الإعدادات...', 1500);
+                const newBio = document.getElementById('bioInput').value.trim();
+                const newEmail = document.getElementById('socialEmail').value.trim();
+                const newFacebook = document.getElementById('socialFacebook').value.trim();
+                const newTwitter = document.getElementById('socialTwitter').value.trim();
+                const newInstagram = document.getElementById('socialInstagram').value.trim();
+                const newTiktok = document.getElementById('socialTiktok').value.trim();
+                const newYoutube = document.getElementById('socialYoutube').value.trim();
+                let newUniqueName = document.getElementById('uniqueNameInput').value.trim();
+                let newAvatar = avatarPreview.src;
+                
+                if (newUniqueName) {
+                    const { data: existing } = await supabase
+                        .from('users')
+                        .select('id')
+                        .eq('unique_name', newUniqueName)
+                        .neq('id', currentUser.id)
+                        .single();
+                    if (existing) {
+                        showToast("⚠️ هذا الرابط الفريد مستخدم من قبل", true);
+                        return;
+                    }
+                }
+                const updates = {
+                    bio: newBio,
+                    social: {
+                        email: newEmail,
+                        facebook: newFacebook,
+                        twitter: newTwitter,
+                        instagram: newInstagram,
+                        tiktok: newTiktok,
+                        youtube: newYoutube
+                    },
+                    unique_name: newUniqueName || null,
+                    avatar: newAvatar.startsWith('blob:') ? currentUser.avatar : newAvatar
+                };
+                const { error } = await supabase
+                    .from('users')
+                    .update(updates)
+                    .eq('id', currentUser.id);
+                if (error) { showToast(error.message, true); return; }
+                showToast("✅ تم حفظ التغييرات");
+                currentUser = { ...currentUser, ...updates };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                await renderProfile();
+                setTab('settings');
+            };
+            // زر توثيق حساب الضيف
+            if (isGuest && document.getElementById('upgradeGuestBtn')) {
+                document.getElementById('upgradeGuestBtn').onclick = async () => {
+                    const email = prompt("أدخل بريدك الإلكتروني لتوثيق الحساب:");
+                    if (!email) return;
+                    const password = prompt("أدخل كلمة مرور جديدة (6 أحرف على الأقل):");
+                    if (!password || password.length < 6) return showToast("كلمة المرور قصيرة جداً", true);
+                    const fullName = prompt("الاسم الكامل (اختياري):") || currentUser.full_name;
+                    showProgress('جاري توثيق الحساب...', 2000);
+                    const success = await upgradeGuestToVerified(email, password, fullName);
+                    if (success) {
+                        setTimeout(() => window.location.reload(), 1500);
+                    }
+                };
+            }
+            // زر تسجيل الخروج
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                showProgress('جاري تسجيل الخروج...', 1000);
+                await supabase.auth.signOut();
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('guestUser');
+                setTimeout(() => {
+                    window.location.href = 'auth.html';
+                }, 500);
+            });
+        }
+    }
+
+    function setTab(tabId) {
+        currentTab = tabId;
+        document.querySelectorAll('.tab').forEach(tab => {
+            if (tab.dataset.tab === tabId) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+        renderContent();
+    }
+
+    // الأحداث
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => setTab(tab.dataset.tab));
+    });
+    document.getElementById('settingsHeaderBtn').addEventListener('click', () => {
+        if (currentUser) setTab('settings');
+    });
+
+    // الوضع الليلي
+    function applyTheme() {
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark');
+            document.body.classList.remove('light');
+        } else {
+            document.body.classList.add('light');
+            document.body.classList.remove('dark');
+        }
+    }
+    applyTheme();
+
+    // بدء التشغيل
+    (async () => {
+        await initDB();
+        currentUser = await checkSession();
+        if (!currentUser) return;
+        await renderProfile();
+        setTab('posts');
+    })();
+</script>
+</body>
+</html>
