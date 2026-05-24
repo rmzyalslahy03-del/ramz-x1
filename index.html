@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Ramz-X | شارك أفكارك حول العالم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 70px;
+            transition: background 0.3s;
+        }
+        body.dark { background-color: #000; }
+        body.light { background-color: #f5f5f5; }
+        body.light .navbar,
+        body.light .hero-section,
+        body.light .features-section,
+        body.light .stats-section,
+        body.light .footer-section,
+        body.light .bottom-footer {
+            background-color: #fff;
+            color: #000;
+        }
+        body.light .hero-title,
+        body.light .feature-title,
+        body.light .stats-number {
+            color: #000;
+        }
+        body.light .hero-subtitle,
+        body.light .feature-desc,
+        body.light .stats-label {
+            color: #555;
+        }
+        body.light .btn-outline {
+            border-color: #ddd;
+            color: #333;
+        }
+        body.light .feature-card {
+            background: #f9f9f9;
+            border-color: #e0e0e0;
+        }
+        body.light .welcome-message {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: #000;
+            border-bottom: 0.5px solid #2c2c2c;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #ff0050);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .dark-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        .hero-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #ff0050);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+        body.light .hero-title {
+            background: linear-gradient(135deg, #000, #ff0050);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        body.light .hero-subtitle {
+            color: #555;
+        }
+        .welcome-message {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            padding: 8px 20px;
+            border-radius: 40px;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            color: #ff0050;
+            border: 1px solid rgba(255, 0, 80, 0.3);
+            animation: fadeInUp 0.6s ease;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #ff0050;
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #e00046;
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ff0050;
+            color: #ff0050;
+        }
+        .btn-outline:hover {
+            background: rgba(255, 0, 80, 0.1);
+        }
+        .features-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            color: white;
+        }
+        body.light .section-title {
+            color: #000;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+        }
+        .feature-card {
+            background: #111;
+            border-radius: 1.5rem;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid #2c2c2c;
+            transition: 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff0050;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #ff0050;
+            margin-bottom: 16px;
+        }
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: white;
+        }
+        .feature-desc {
+            font-size: 0.9rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+        .stats-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+            text-align: center;
+        }
+        .stat-item {
+            flex: 1;
+            min-width: 120px;
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ff0050;
+        }
+        .stats-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 8px;
+        }
+        .footer-section {
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid #2c2c2c;
+            color: #777;
+            font-size: 0.8rem;
+            margin-bottom: 0;
+        }
+        .bottom-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #ddd;
+            z-index: 30;
+        }
+        body.dark .bottom-footer {
+            background-color: #111;
+            border-top-color: #2c2c2c;
+        }
+        .footer-button {
+            background: none;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #333;
+            text-decoration: none;
+        }
+        body.dark .footer-button {
+            color: #aaa;
+        }
+        .footer-button:hover {
+            color: #ff0050;
+            transform: scale(1.05);
+        }
+        .icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .label {
+            font-size: 11px;
+        }
+        #globalToast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            font-size: 14px;
+            border-left: 4px solid #fe2c55;
+        }
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            .navbar {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">Ramz-X</div>
+    <button class="dark-toggle" id="darkModeToggle"><i class="fas fa-moon"></i></button>
+</nav>
+
+<main>
+    <div class="hero-section">
+        <div class="welcome-message">
+            <i class="fas fa-globe"></i> Ramz-X | شارك أفكارك حول العالم
+        </div>
+        <h1 class="hero-title">مكان يلتقي فيه الإبداع</h1>
+        <p class="hero-subtitle">شارك صورك ومقالاتك، تواصل مع مجتمع من المبدعين، واكتشف محتوى ملهم كل يوم.</p>
+        <div class="hero-buttons">
+            <a href="auth.html" class="btn btn-primary">ابدأ الآن</a>
+            <a href="home.html" class="btn btn-outline">تصفح كضيف</a>
+        </div>
+    </div>
+
+    <div class="features-section">
+        <h2 class="section-title">لماذا Ramz-X؟</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-images"></i></div>
+                <div class="feature-title">صور ومقالات</div>
+                <div class="feature-desc">انشر لحظاتك وأفكارك بتجربة غنية وسلسة.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-heart"></i></div>
+                <div class="feature-title">تفاعل حقيقي</div>
+                <div class="feature-desc">إعجابات، تعليقات، مشاركات – تواصل مع مجتمعك.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="feature-title">خوارزمية ذكية</div>
+                <div class="feature-desc">اكتشف محتوى يناسب اهتماماتك في توقيت مثالي.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-users"></i></div>
+                <div class="feature-title">مجتمع نشط</div>
+                <div class="feature-desc">تواصل مع أصدقائك والمبدعين حول العالم.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <div class="stat-item">
+            <div class="stats-number" id="usersCount">0</div>
+            <div class="stats-label">مستخدم نشط</div>
+        </div>
+        <div class="stat-item">
+            <div class="stats-number" id="postsCount">0</div>
+            <div class="stats-label">منشور</div>
+        </div>
+        <div class="stat-item">
+            <div class="stats-number" id="interactionsCount">0</div>
+            <div class="stats-label">تفاعل</div>
+        </div>
+    </div>
+</main>
+
+<footer class="footer-section">
+    <p>© 2025 Ramz-X – شارك أفكارك حول العالم</p>
+</footer>
+
+<div class="bottom-footer">
+    <a href="index.html" class="footer-button"><i class="fas fa-home icon"></i><div class="label">الرئيسية</div></a>
+    <a href="explore.html" class="footer-button"><i class="fas fa-compass icon"></i><div class="label">استكشاف</div></a>
+    <a href="create-post.html" class="footer-button"><i class="fas fa-plus-circle icon"></i><div class="label">إنشاء</div></a>
+    <a href="inbox.html" class="footer-button"><i class="fas fa-inbox icon"></i><div class="label">صندوق الوارد</div></a>
+    <a href="profile.html" class="footer-button"><i class="fas fa-user icon"></i><div class="label">الملف الشخصي</div></a>
+</div>
+
+<div id="globalToast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="common.js"></script>
+<script>
+    // إحصائيات حقيقية من قاعدة البيانات
+    async function fetchRealStats() {
+        try {
+            // عدد المستخدمين من جدول users
+            const { count: usersCount, error: usersErr } = await supabase
+                .from('users')
+                .select('*', { count: 'exact', head: true });
+            if (usersErr) throw usersErr;
+            
+            // عدد المنشورات (غير المخفية)
+            const { count: postsCount, error: postsErr } = await supabase
+                .from('posts')
+                .select('*', { count: 'exact', head: true })
+                .eq('hidden', false);
+            if (postsErr) throw postsErr;
+            
+            // مجموع التفاعلات (إعجابات + تعليقات + مشاركات)
+            const { data: interactionsData, error: interactionsErr } = await supabase
+                .from('posts')
+                .select('likes_count, comments_count, reposts_count');
+            if (interactionsErr) throw interactionsErr;
+            
+            let totalInteractions = 0;
+            interactionsData.forEach(p => {
+                totalInteractions += (p.likes_count || 0) + (p.comments_count || 0) + (p.reposts_count || 0);
+            });
+            
+            document.getElementById('usersCount').innerText = formatNumber(usersCount || 0);
+            document.getElementById('postsCount').innerText = formatNumber(postsCount || 0);
+            document.getElementById('interactionsCount').innerText = formatNumber(totalInteractions || 0);
+        } catch (err) {
+            console.error("خطأ في جلب الإحصائيات:", err);
+            // في حالة فشل الاتصال، نعرض بيانات تجريبية محلية
+            document.getElementById('usersCount').innerText = "1.2K";
+            document.getElementById('postsCount').innerText = "340";
+            document.getElementById('interactionsCount').innerText = "12.8K";
+        }
+    }
+    
+    function formatNumber(num) {
+        if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
+    }
+    
+    // تهيئة الإحصائيات بعد تحميل الصفحة
+    async function initStats() {
+        await initDB(); // تهيئة الاتصال بقاعدة البيانات (من common.js)
+        await fetchRealStats();
+    }
+    
+    // الوضع الليلي / الفاتح
+    function applyTheme() {
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark');
+            document.body.classList.remove('light');
+        } else {
+            document.body.classList.add('light');
+            document.body.classList.remove('dark');
+        }
+    }
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+        let isDark = document.body.classList.contains('dark');
+        localStorage.setItem('darkMode', !isDark);
+        applyTheme();
+    });
+    applyTheme();
+    
+    // إظهار رسالة ترحيب عند تحميل الصفحة لأول مرة (اختياري)
+    function showWelcomeToast() {
+        const toast = document.getElementById('globalToast');
+        toast.textContent = '✨ مرحباً بك في Ramz-X – شارك أفكارك حول العالم ✨';
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 4000);
+    }
+    
+    // بدء التشغيل
+    (async () => {
+        await initStats();
+        showWelcomeToast();
+    })();
+</script>
+</body>
+</html>
