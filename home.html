@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>الرئيسية | Ramz-X</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* ==== الأنماط الموحدة من home.html و create-post.html ==== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 70px;
+            transition: background 0.3s;
+        }
+        body.dark { background-color: #000; }
+        body.light { background-color: #f5f5f5; }
+        body.light .header, body.light .post-card, body.light .bottom-sheet, body.light .modal-content,
+        body.light .top-bar, body.light .container, body.light .rich-editor, body.light .editor-content,
+        body.light .settings-input, body.light .form-group select, body.light .form-group input, body.light .form-group textarea {
+            background-color: #fff; color: #000;
+        }
+        body.light .header h1, body.light .logo, body.light .post-title, body.light .author-name { color: #000; }
+        body.light .post-text, body.light .comment-text, body.light .editor-content { color: #333; }
+        body.light .action-btn { color: #555; border-color: #ccc; background: #f1f5f9; }
+        body.light .action-btn.liked { color: #dc2626; border-color: #dc2626; background: rgba(220,38,38,0.1); }
+        body.light .action-btn.favorited { color: #f59e0b; border-color: #f59e0b; background: rgba(245,158,11,0.1); }
+        body.light .action-btn.reposted { color: #dc2626; border-color: #dc2626; background: rgba(220,38,38,0.1); }
+        body.light .top-btn { background: #e2e8f0; color: #1e293b; }
+        body.light .editor-toolbar { background: #f8fafc; border-bottom-color: #ccc; }
+        body.light .tool-btn:hover { background: #e2e8f0; }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #000;
+            border-bottom: 0.5px solid #2c2c2c;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #ff0050); background-clip: text; -webkit-background-clip: text; color: transparent; cursor: pointer; }
+        .search-icon, .dark-toggle, .back-btn { background: none; border: none; color: white; font-size: 22px; cursor: pointer; }
+        .feed-container { max-width: 600px; margin: 0 auto; padding: 12px; }
+        .post-card {
+            background: #111;
+            border-radius: 1rem;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 1px solid #2c2c2c;
+            transition: 0.2s;
+        }
+        .post-card:hover { transform: translateY(-2px); border-color: #ff0050; }
+        .post-header { display: flex; align-items: center; gap: 12px; padding: 12px; }
+        .author-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; cursor: pointer; background: #2c2c2c; }
+        .author-info { flex: 1; }
+        .author-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .author-name { font-weight: bold; font-size: 15px; color: white; }
+        .verified-badge { color: #3b82f6; font-size: 12px; }
+        .follow-btn { background: rgba(255,0,80,0.2); border: 1px solid #ff0050; border-radius: 20px; padding: 2px 10px; font-size: 11px; cursor: pointer; color: #ff0050; }
+        .post-date { font-size: 11px; color: #777; margin-top: 2px; }
+        .post-image { width: 100%; max-height: 400px; object-fit: cover; background: #2c2c2c; }
+        .post-content { padding: 12px; }
+        .post-title { font-weight: bold; font-size: 18px; margin-bottom: 6px; color: white; }
+        .category-badge { font-size: 10px; background: #2c2c2c; padding: 2px 8px; border-radius: 20px; margin-right: 8px; display: inline-block; }
+        .post-text, .post-text-short { color: #aaa; font-size: 14px; line-height: 1.4; margin-bottom: 6px; }
+        .post-text-full { display: none; }
+        .more-btn { color: #ff0050; cursor: pointer; font-size: 0.8rem; margin-top: 4px; display: inline-block; }
+        .hashtag { color: #ff0050; font-size: 12px; margin-top: 4px; cursor: pointer; background: rgba(255,0,80,0.1); padding: 2px 8px; border-radius: 20px; display: inline-block; }
+        .action-bar { display: flex; justify-content: space-around; border-top: 1px solid #2c2c2c; padding: 8px; flex-wrap: wrap; gap: 8px; }
+        .action-btn {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #aaa;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+        .action-btn:hover { background: rgba(255,255,255,0.2); }
+        .action-btn.liked { color: #ff0050; border-color: #ff0050; background: rgba(255,0,80,0.1); }
+        .action-btn.favorited { color: #f59e0b; border-color: #f59e0b; background: rgba(245,158,11,0.1); }
+        .action-btn.reposted { color: #dc2626; border-color: #dc2626; background: rgba(220,38,38,0.1); }
+        .bottom-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #ddd;
+            z-index: 30;
+        }
+        body.dark .bottom-footer { background-color: #111; border-top-color: #2c2c2c; }
+        .footer-button { background: none; border: none; text-align: center; cursor: pointer; transition: 0.2s; color: #333; text-decoration: none; }
+        body.dark .footer-button { color: #aaa; }
+        .footer-button:hover { color: #ff0050; transform: scale(1.05); }
+        .icon { font-size: 22px; display: block; margin-bottom: 4px; }
+        .label { font-size: 11px; }
+        .bottom-sheet {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background: #111;
+            border-radius: 1.5rem 1.5rem 0 0;
+            transition: bottom 0.3s;
+            z-index: 1300;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+        body.dark .bottom-sheet { background: #1e293b; }
+        .bottom-sheet.open { bottom: 0; }
+        .sheet-header { padding: 16px; border-bottom: 1px solid #2c2c2c; display: flex; justify-content: space-between; font-weight: bold; color: white; }
+        .comments-list, .analytics-list { padding: 12px; overflow-y: auto; flex: 1; }
+        .comment-item { margin-bottom: 12px; border-bottom: 1px solid #2c2c2c; padding-bottom: 8px; }
+        .comment-author { font-weight: bold; color: white; font-size: 13px; }
+        .comment-text { color: #ccc; font-size: 13px; margin: 4px 0; }
+        .comment-actions { display: flex; gap: 12px; font-size: 11px; color: #777; }
+        .add-comment { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #2c2c2c; }
+        .add-comment input { flex: 1; background: #2c2c2c; border: none; border-radius: 30px; padding: 10px 16px; color: white; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1250; }
+        .overlay.show { display: block; }
+        .privacy-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid #2c2c2c; padding-bottom: 8px; }
+        .privacy-tab { background: none; border: none; padding: 6px 12px; cursor: pointer; border-radius: 20px; color: #aaa; }
+        .privacy-tab.active { background: #ff0050; color: white; }
+        .settings-input { width: 100%; padding: 8px; border-radius: 12px; background: #2c2c2c; border: none; color: white; margin-bottom: 12px; }
+        .download-options { display: flex; gap: 16px; justify-content: center; margin: 16px 0; }
+        .download-options button { background: #ff0050; border: none; padding: 8px 20px; border-radius: 30px; color: white; cursor: pointer; }
+        .progress-bar { width: 100%; height: 4px; background: #2c2c2c; border-radius: 2px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: #ff0050; transition: width 0.3s; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #666; }
+        #globalToast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            font-size: 14px;
+            border-left: 4px solid #fe2c55;
+        }
+        @media (max-width: 640px) { .action-btn span:not(.count) { display: none; } }
+        
+        /* ==== أنماط خاصة بإنشاء المنشور ==== */
+        .top-bar {
+            background: #111;
+            border-radius: 3rem;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .top-btn {
+            background: #2c2c2c;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: 0.2s;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+        .top-btn:hover { background: #ff0050; color: white; }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #111;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .rich-editor {
+            border: 1px solid #2c2c2c;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .editor-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            padding: 0.5rem;
+            background: #1a1a1a;
+            border-bottom: 1px solid #2c2c2c;
+        }
+        .tool-btn {
+            background: none;
+            border: none;
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            color: white;
+        }
+        .editor-content {
+            min-height: 200px;
+            padding: 0.8rem;
+            outline: none;
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.5;
+            background: #1a1a1a;
+            color: white;
+        }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.3rem; font-weight: 600; color: #ccc; }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #2c2c2c;
+            border-radius: 1rem;
+            font-family: 'Cairo', sans-serif;
+            background: #1a1a1a;
+            color: white;
+        }
+        .image-preview {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            margin-top: 0.5rem;
+            border-radius: 1rem;
+            display: none;
+            background: #2c2c2c;
+        }
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .btn-publish { background: #ff0050; color: white; flex:1; }
+        .btn-draft { background: #64748b; color: white; flex:1; }
+        .btn-drafts { background: #f59e0b; color: white; }
+        .btn-back { background: #2c2c2c; color: white; }
+        button { padding: 0.7rem 1.5rem; border: none; border-radius: 2rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal.open { visibility: visible; opacity: 1; }
+        .modal-content {
+            background: #111;
+            border-radius: 1.5rem;
+            max-width: 500px;
+            width: 90%;
+            padding: 1.5rem;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; color: white; }
+        .close-modal { cursor: pointer; font-size: 1.2rem; }
+        .camera-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .camera-fullscreen.open { visibility: visible; opacity: 1; }
+        .camera-video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        #fullscreenVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        .floating-effects {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px;
+            pointer-events: none;
+        }
+        .effects-row, .templates-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 5px;
+            pointer-events: auto;
+            scrollbar-width: thin;
+        }
+        .effect-item, .template-item {
+            background: transparent !important;
+            border: none !important;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            cursor: pointer;
+            transition: 0.1s;
+            opacity: 0.7;
+        }
+        .effect-item:hover, .template-item:hover { opacity: 1; transform: scale(1.1); }
+        .effect-item canvas, .template-item canvas {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.3);
+            border: none;
+        }
+        .effect-item span, .template-item span {
+            font-size: 0.55rem;
+            color: white;
+            text-shadow: 0 0 2px black;
+            margin-top: 2px;
+        }
+        .capture-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            pointer-events: auto;
+            z-index: 10;
+        }
+        .capture-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #ff0050;
+            cursor: pointer;
+        }
+        .no-effect-btn, .switch-camera-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+        }
+        .close-camera {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 20;
+        }
+        .search-effect {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 20;
+        }
+        .filter-thumb {
+            display: inline-block;
+            margin: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: 0.2s;
+        }
+        .filter-thumb:hover { transform: scale(1.05); }
+        .filter-thumb canvas { width: 80px; height: 80px; border-radius: 0.5rem; border: 2px solid transparent; }
+        .filter-thumb.selected canvas { border-color: #ff0050; }
+        .poll-question, .challenge-card { background: #2c2c2c; padding: 0.5rem; border-radius: 1rem; margin-bottom: 0.5rem; color: white; }
+        .progress-toast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            border-radius: 40px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .progress-toast .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #2c2c2c;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-toast .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #ff0050;
+            transition: width 0.2s linear;
+        }
+        .drafts-list { padding: 1rem; overflow-y: auto; flex: 1; }
+        .draft-item { border-bottom: 1px solid #2c2c2c; padding: 1rem; cursor: pointer; transition: 0.2s; color: white; }
+        .draft-item:hover { background: #2c2c2c; }
+        .draft-title { font-weight: bold; }
+        .draft-date { font-size: 0.7rem; color: #aaa; }
+        .draft-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo" onclick="window.location.href='home.html'">Ramz-X</div>
+    <button class="search-icon" id="searchBtn"><i class="fas fa-search"></i></button>
+    <button class="dark-toggle" id="darkModeToggle"><i class="fas fa-moon"></i></button>
+</div>
+
+<main>
+    <!-- شاشة التغذية الرئيسية -->
+    <div id="feedScreen">
+        <div class="feed-container" id="feedContainer">جاري التحميل...</div>
+    </div>
+
+    <!-- شاشة إنشاء المنشور (مخفية افتراضياً) -->
+    <div id="createScreen" style="display: none;">
+        <div class="top-bar">
+            <button class="top-btn" data-tool="url"><i class="fas fa-link"></i> رابط صورة</button>
+            <button class="top-btn" data-tool="camera"><i class="fas fa-camera"></i> كاميرا</button>
+            <button class="top-btn" data-tool="edit-image"><i class="fas fa-edit"></i> تعديل الصورة</button>
+            <button class="top-btn" data-tool="ai-article"><i class="fas fa-robot"></i> ابتكار مقال</button>
+            <button class="top-btn" data-tool="ai-image-gen"><i class="fas fa-palette"></i> توليد صورة AI</button>
+            <button class="top-btn" data-tool="translate"><i class="fas fa-language"></i> ترجمة (EN/AR)</button>
+            <button class="top-btn" data-tool="poll"><i class="fas fa-chart-simple"></i> استبيان</button>
+            <button class="top-btn" data-tool="location"><i class="fas fa-location-dot"></i> الموقع</button>
+            <button class="top-btn" data-tool="challenge"><i class="fas fa-trophy"></i> تحدي</button>
+            <button class="top-btn" data-tool="filters"><i class="fas fa-filter"></i> فلاتر (20)</button>
+        </div>
+        <div class="container">
+            <h1 style="color:white; margin-bottom:1rem;"><i class="fas fa-plus-circle"></i> منشور جديد</h1>
+            <div class="form-group">
+                <label>العنوان *</label>
+                <input type="text" id="postTitle" placeholder="عنوان المنشور">
+            </div>
+            <div class="form-group">
+                <label>المحتوى * (محرر غني)</label>
+                <div class="rich-editor">
+                    <div class="editor-toolbar">
+                        <button class="tool-btn" data-cmd="bold"><i class="fas fa-bold"></i></button>
+                        <button class="tool-btn" data-cmd="italic"><i class="fas fa-italic"></i></button>
+                        <button class="tool-btn" data-cmd="underline"><i class="fas fa-underline"></i></button>
+                        <button class="tool-btn" data-cmd="insertUnorderedList"><i class="fas fa-list-ul"></i></button>
+                        <button class="tool-btn" data-cmd="insertOrderedList"><i class="fas fa-list-ol"></i></button>
+                        <button class="tool-btn" data-cmd="justifyLeft"><i class="fas fa-align-left"></i></button>
+                        <button class="tool-btn" data-cmd="justifyCenter"><i class="fas fa-align-center"></i></button>
+                        <button class="tool-btn" data-cmd="justifyRight"><i class="fas fa-align-right"></i></button>
+                        <button class="tool-btn" data-cmd="createLink"><i class="fas fa-link"></i></button>
+                        <input type="color" id="textColor" style="width:30px;height:30px;border-radius:50%;border:none;">
+                        <select id="fontFamily" style="background:#1a1a1a;color:white;"><option value="Cairo">Cairo</option><option value="Arial">Arial</option></select>
+                        <select id="fontSize" style="background:#1a1a1a;color:white;"><option>14px</option><option>16px</option><option>18px</option><option>24px</option></select>
+                    </div>
+                    <div id="editorContent" class="editor-content" contenteditable="true"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>صورة المنشور (جودة عالية)</label>
+                <input type="file" id="postImageFile" accept="image/*">
+                <img id="imagePreview" class="image-preview" alt="معاينة الصورة">
+            </div>
+            <div class="form-group">
+                <label>هاشتاج (بدون #)</label>
+                <input type="text" id="postHashtag" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label>نوع المنشور (التصنيف)</label>
+                <select id="postCategory">
+                    <option>أخبار</option><option>رياضة</option><option>تعليم</option><option>سياحة</option>
+                    <option>زراعة</option><option>صناعة</option><option>تجارة</option><option>تسويق</option>
+                    <option>إعلانات</option><option>أخرى</option>
+                </select>
+            </div>
+            <div id="pollContainer" style="margin-bottom:1rem;"></div>
+            <div id="challengeContainer" style="margin-bottom:1rem;"></div>
+            <div class="buttons">
+                <button class="btn-publish" id="publishBtn"><i class="fas fa-globe"></i> نشر</button>
+                <button class="btn-draft" id="draftBtn"><i class="fas fa-save"></i> حفظ كمسودة</button>
+                <button class="btn-drafts" id="showDraftsBtn"><i class="fas fa-list"></i> المسودات</button>
+                <button class="btn-back" id="backFromCreateBtn"><i class="fas fa-arrow-right"></i> رجوع</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="bottom-footer">
+    <a href="home.html" class="footer-button" id="homeFooterBtn"><i class="fas fa-home icon"></i><div class="label">الرئيسية</div></a>
+    <a href="explore.html" class="footer-button"><i class="fas fa-compass icon"></i><div class="label">استكشاف</div></a>
+    <a href="#" class="footer-button" id="createFooterBtn"><i class="fas fa-plus-circle icon"></i><div class="label">إنشاء</div></a>
+    <a href="inbox.html" class="footer-button"><i class="fas fa-inbox icon"></i><div class="label">صندوق الوارد</div></a>
+    <a href="profile.html" class="footer-button"><i class="fas fa-user icon"></i><div class="label">الملف الشخصي</div></a>
+</div>
+
+<!-- جميع النوافذ المنبثقة (من home و create-post) -->
+<!-- نافذة تعليقات -->
+<div id="commentSheet" class="bottom-sheet">
+    <div class="sheet-header"><span>💬 التعليقات</span><i class="fas fa-times" id="closeCommentSheet" style="cursor:pointer"></i></div>
+    <div class="comments-list" id="commentsList"></div>
+    <div class="add-comment"><input type="text" id="newCommentText" placeholder="اكتب تعليقاً..."><button id="submitCommentBtn" style="background:#ff0050; border:none; padding:0 20px; border-radius:30px; color:white;">إرسال</button></div>
+</div>
+<div id="commentOverlay" class="overlay"></div>
+
+<!-- نافذة تحليلات -->
+<div id="analyticsSheet" class="bottom-sheet">
+    <div class="sheet-header"><span>📊 تحليلات المنشور</span><i class="fas fa-times" id="closeAnalyticsSheet" style="cursor:pointer"></i></div>
+    <div class="analytics-list" id="analyticsContent"></div>
+</div>
+<div id="analyticsOverlay" class="overlay"></div>
+
+<!-- نافذة مشاركة متقدمة -->
+<div id="shareAdvancedSheet" class="bottom-sheet">
+    <div class="sheet-header"><span>🔁 مشاركة متقدمة</span><i class="fas fa-times" id="closeShareAdvancedSheet" style="cursor:pointer"></i></div>
+    <div style="padding:16px;">
+        <div style="display:flex; gap:16px; justify-content:center; margin-bottom:16px;">
+            <i class="fab fa-facebook" style="font-size:28px; cursor:pointer;"></i>
+            <i class="fab fa-twitter" style="font-size:28px; cursor:pointer;"></i>
+            <i class="fab fa-instagram" style="font-size:28px; cursor:pointer;"></i>
+            <i class="fab fa-whatsapp" style="font-size:28px; cursor:pointer;"></i>
+            <i class="fab fa-telegram" style="font-size:28px; cursor:pointer;"></i>
+        </div>
+        <button id="copyLinkBtn" style="width:100%; background:#ff0050; border:none; padding:10px; border-radius:30px; color:white; margin-bottom:16px;">📋 نسخ الرابط</button>
+        <div id="friendsShareList" style="max-height:200px; overflow-y:auto;"></div>
+    </div>
+</div>
+<div id="shareAdvancedOverlay" class="overlay"></div>
+
+<!-- نافذة إعدادات المنشور -->
+<div id="postSettingsSheet" class="bottom-sheet" style="max-height: 90vh;">
+    <div class="sheet-header"><span>⚙️ إعدادات المنشور</span><i class="fas fa-times" id="closeSettingsSheet" style="cursor:pointer"></i></div>
+    <div style="padding:16px; overflow-y:auto; flex:1;">
+        <div class="privacy-tabs" id="settingsTabs">
+            <button class="privacy-tab active" data-settings-tab="edit">✏️ تعديل</button>
+            <button class="privacy-tab" data-settings-tab="privacy">🔒 خيارات النشر</button>
+            <button class="privacy-tab" data-settings-tab="interact">💬 التفاعلات</button>
+        </div>
+        <div id="settingsEditTab">
+            <div class="form-group"><label style="color:white;">العنوان</label><input type="text" id="editTitle" class="settings-input"></div>
+            <div class="form-group"><label style="color:white;">المحتوى</label><textarea id="editContent" rows="5" class="settings-input"></textarea></div>
+            <div class="form-group"><label style="color:white;">رابط الصورة</label><input type="text" id="editImage" class="settings-input"></div>
+            <div class="form-group"><label style="color:white;">هاشتاج</label><input type="text" id="editHashtag" class="settings-input"></div>
+            <div class="form-group"><label style="color:white;">التصنيف</label><select id="editCategory" class="settings-input"><option>أخبار</option><option>ترفيه</option><option>رياضة</option><option>تعليم</option><option>تقنية</option></select></div>
+            <button id="saveEditBtn" style="background:#ff0050; border:none; padding:10px; border-radius:30px; color:white; width:100%;">💾 حفظ التعديلات</button>
+        </div>
+        <div id="settingsPrivacyTab" style="display:none;">
+            <div class="privacy-group"><label style="color:white;">🔒 خصوصية المنشور</label><select id="privacyPost" class="settings-input"><option value="public">عام</option><option value="friends">الأصدقاء فقط</option></select></div>
+            <div class="privacy-group"><label style="color:white;">⏳ مدة الصلاحية</label><select id="privacyDuration" class="settings-input"><option value="unlimited">بلا حدود</option><option value="week">أسبوع</option><option value="month">شهر</option></select></div>
+        </div>
+        <div id="settingsInteractTab" style="display:none;">
+            <div class="privacy-group"><label style="color:white;">💬 خصوصية التعليق</label><select id="privacyComment" class="settings-input"><option value="all">الجميع</option><option value="followers">المتابعون فقط</option><option value="none">لا أحد</option></select></div>
+            <div class="privacy-group"><label style="color:white;">🔁 خصوصية إعادة النشر</label><select id="privacyRepost" class="settings-input"><option value="all">الجميع</option><option value="followers">المتابعون فقط</option><option value="none">لا أحد</option></select></div>
+            <div class="privacy-group"><label style="color:white;">❤️ خصوصية الإعجاب</label><select id="privacyLike" class="settings-input"><option value="all">الجميع</option><option value="followers">المتابعون فقط</option><option value="none">لا أحد</option></select></div>
+        </div>
+    </div>
+</div>
+<div id="postSettingsOverlay" class="overlay"></div>
+
+<!-- نافذة تنزيل المحتوى -->
+<div id="downloadSheet" class="bottom-sheet">
+    <div class="sheet-header"><span>📥 تنزيل المحتوى</span><i class="fas fa-times" id="closeDownloadSheet" style="cursor:pointer"></i></div>
+    <div style="padding:16px;">
+        <div class="download-options"><button id="downloadImageOption">🖼️ تنزيل الصورة</button><button id="downloadPdfOption">📄 تنزيل المقال (PDF)</button></div>
+        <div id="downloadProgress" style="display:none;"><div>جاري التنزيل...</div><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div></div>
+    </div>
+</div>
+<div id="downloadOverlay" class="overlay"></div>
+
+<!-- نافذة المسودات -->
+<div id="draftsSheet" class="bottom-sheet">
+    <div class="sheet-header"><span>📝 مسوداتي</span><i id="closeDraftsSheet" class="fas fa-times" style="cursor:pointer"></i></div>
+    <div id="draftsList" style="padding:1rem;overflow-y:auto;"></div>
+</div>
+<div id="draftsOverlay" class="overlay"></div>
+
+<!-- كاميرا ملء الشاشة -->
+<div id="cameraFullscreen" class="camera-fullscreen">
+    <button class="close-camera" id="closeFullscreenCamera"><i class="fas fa-times"></i></button>
+    <button class="search-effect" id="searchEffectBtn"><i class="fas fa-search"></i> بحث</button>
+    <div class="camera-video-wrapper">
+        <video id="fullscreenVideo" autoplay playsinline></video>
+        <div class="floating-effects">
+            <div class="effects-row" id="effectsScroll"></div>
+            <div class="templates-row" id="templatesScroll"></div>
+        </div>
+        <div class="capture-buttons">
+            <div class="no-effect-btn" id="noEffectBtn">🚫</div>
+            <div class="switch-camera-btn" id="switchCameraBtn"><i class="fas fa-sync-alt"></i></div>
+            <div class="capture-btn" id="capturePhotoBtn"></div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال تعديل الصورة -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>تعديل الصورة</h3><i class="fas fa-times close-modal"></i></div>
+        <canvas id="editCanvas" style="width:100%;border-radius:1rem;"></canvas>
+        <div class="edit-controls" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem;">
+            <button id="brightnessBtn">سطوع +</button>
+            <button id="contrastBtn">تباين +</button>
+            <button id="saturationBtn">تشبع +</button>
+            <button id="grayscaleBtn">تدرج رمادي</button>
+            <button id="rotateLeftBtn">تدوير 90°</button>
+            <button id="flipHorizontalBtn">قلب أفقي</button>
+            <button id="flipVerticalBtn">قلب عمودي</button>
+            <button id="addWatermarkBtn">إضافة علامة مائية (Ramz-X_اسمك)</button>
+            <button id="applyEditBtn">تطبيق وحفظ (جودة عالية)</button>
+        </div>
+    </div>
+</div>
+
+<!-- مودال ابتكار مقال بالذكاء الاصطناعي -->
+<div id="aiArticleModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>توليد مقال بالذكاء الاصطناعي</h3><i class="fas fa-times close-modal"></i></div>
+        <input type="text" id="articleTitle" placeholder="أدخل عنوان المقال..." style="width:100%;margin-bottom:0.5rem;">
+        <button id="generateArticleBtn">توليد المقال</button>
+        <div id="generatedArticle" style="margin-top:1rem;background:#2c2c2c;padding:0.8rem;border-radius:1rem;display:none;"></div>
+        <button id="insertArticleBtn" style="margin-top:0.5rem;display:none;">إدراج المقال في المنشور</button>
+    </div>
+</div>
+
+<!-- مودال توليد صورة بالذكاء الاصطناعي -->
+<div id="aiImageGenModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>توليد صورة بالذكاء الاصطناعي</h3><i class="fas fa-times close-modal"></i></div>
+        <input type="text" id="imagePrompt" placeholder="صف الصورة التي تريدها..." style="width:100%;margin-bottom:0.5rem;">
+        <button id="generateImageBtn">توليد صورة</button>
+        <div id="generatedImageResult" style="margin-top:1rem;"></div>
+        <button id="useGeneratedImageBtn" style="margin-top:0.5rem;display:none;">استخدام هذه الصورة</button>
+    </div>
+</div>
+
+<!-- مودال استبيان -->
+<div id="pollModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>إنشاء استبيان</h3><i class="fas fa-times close-modal"></i></div>
+        <input type="text" id="pollQuestion" placeholder="سؤال الاستبيان..." style="width:100%;margin-bottom:0.5rem;">
+        <div id="pollOptionsContainer">
+            <div class="poll-option"><input type="text" placeholder="خيار 1" class="pollOptionInput" style="width:80%;margin-left:0.5rem;"><button class="removeOptionBtn" style="background:#ef4444;padding:0.2rem 0.6rem;">حذف</button></div>
+        </div>
+        <button id="addOptionBtn"><i class="fas fa-plus"></i> إضافة خيار</button>
+        <button id="savePollBtn" style="margin-top:0.5rem;">حفظ الاستبيان وإضافته للمنشور</button>
+    </div>
+</div>
+
+<!-- مودال تحدي -->
+<div id="challengeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>إنشاء تحدي جديد</h3><i class="fas fa-times close-modal"></i></div>
+        <div class="form-group"><label>نوع التحدي</label>
+            <select id="challengeType">
+                <option>مسابقة</option><option>مسألة</option><option>سؤال</option><option>استطلاع جماعي</option>
+                <option>مناسبة معينة</option><option>ملف Excel</option><option>ملفي الشخصي</option><option>ملف مستخدم آخر على المنصة</option>
+            </select>
+        </div>
+        <div class="form-group"><label>عنوان التحدي *</label><input type="text" id="challengeTitle" placeholder="عنوان التحدي"></div>
+        <div class="form-group"><label>الوصف التفصيلي</label><textarea id="challengeDesc" rows="3" placeholder="وصف التحدي..."></textarea></div>
+        <div class="form-group" id="extraFieldGroup" style="display:none;"><label id="extraLabel">رابط/اسم المستخدم</label><input type="text" id="extraValue" placeholder=""></div>
+        <button id="saveChallengeBtn">حفظ التحدي وإضافته للمنشور</button>
+    </div>
+</div>
+
+<!-- مودال فلاتر -->
+<div id="filtersModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>اختر فلتراً (20 فلتر)</h3><i class="fas fa-times close-modal"></i></div>
+        <div id="filtersGallery" style="display:flex;flex-wrap:wrap;justify-content:center;max-height:400px;overflow-y:auto;"></div>
+        <button id="applyFilterBtn" style="margin-top:1rem;">تطبيق الفلتر المختار (جودة عالية)</button>
+    </div>
+</div>
+
+<div id="globalToast"></div>
+<div id="progressToast" class="progress-toast">
+    <div class="progress-text" id="progressText">جاري التنفيذ...</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="common.js"></script>
+<script>
+    // ==================== دمج جميع دوال home و create-post في ملف واحد ====================
+    let currentUser = null;
+    let currentPostForSettings = null;
+    let currentPostForShare = null;
+    let currentPostForDownload = null;
+    let currentPostCommentsId = null;
+
+    // --- متغيرات خاصة بالإنشاء ---
+    let currentEditingDraftId = null;
+    let uploadedImageURL = null;
+    let currentPoll = null, currentLocation = null, currentChallenge = null;
+    let videoStream = null, selectedEffect = null, selectedTemplate = null, videoElement = null;
+    let currentFacingMode = 'user';
+    let originalImageForFilters = null, selectedFilterName = "";
+    let rotation = 0, flipH = false, flipV = false;
+    let currentEditImage = null, editCtx = null;
+
+    // --- دوال مساعدة عامة ---
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('globalToast');
+        toast.innerText = msg;
+        toast.style.backgroundColor = isError ? '#dc2626' : '#1f1f1f';
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    }
+    function showProgress(message, duration = 1500) {
+        const toast = document.getElementById('progressToast');
+        const textEl = document.getElementById('progressText');
+        const fillEl = document.getElementById('progressFill');
+        textEl.innerText = message;
+        toast.style.opacity = '1';
+        fillEl.style.width = '0%';
+        const startTime = Date.now();
+        const interval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const percent = Math.min(100, (elapsed / duration) * 100);
+            fillEl.style.width = percent + '%';
+            if (percent >= 100) {
+                clearInterval(interval);
+                setTimeout(() => { toast.style.opacity = '0'; }, 200);
+            }
+        }, 20);
+    }
+    function formatNumber(num) { if (num >= 1000000) return (num/1000000).toFixed(1)+'M'; if (num>=1000) return (num/1000).toFixed(1)+'K'; return num; }
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    // --- دوال التغذية (من home.html الأصلي) ---
+    async function renderFeed() {
+        const container = document.getElementById('feedContainer');
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-pulse"></i><p>جاري التحميل...</p></div>';
+        const posts = await fetchFeed();
+        if (!posts || posts.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="far fa-newspaper"></i><p>لا توجد منشورات</p></div>';
+            return;
+        }
+        const postIds = posts.map(p => p.id);
+        const { likes, favorites, reposts, follows } = await getUserInteractions(postIds);
+        let html = '';
+        for (let p of posts) {
+            const isLiked = likes[p.id] || false;
+            const isFav = favorites[p.id] || false;
+            const isReposted = reposts[p.id] || false;
+            const isFollowing = follows.has(p.author_id);
+            const isOwner = (currentUser && p.author_id === currentUser.id);
+            const shortContent = p.content.length > 150 ? p.content.substring(0, 150) + '...' : p.content;
+            const userColor = `hsl(${Math.abs(parseInt(p.author_id?.substring(0,8) || '0', 16) % 360)}, 70%, 60%)`;
+            html += `
+                <div class="post-card" data-id="${p.id}" style="border-left: 3px solid ${userColor};">
+                    <div class="post-header">
+                        <img class="author-avatar" data-author-id="${p.author_id}" src="${p.author_avatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" onerror="this.src='https://randomuser.me/api/portraits/lego/1.jpg'">
+                        <div class="author-info">
+                            <div class="author-name-row">
+                                <span class="author-name" style="color:${userColor};">${escapeHtml(p.author_name)}</span>
+                                <i class="fas fa-check-circle verified-badge"></i>
+                                ${!isOwner ? `<button class="follow-btn" data-author-id="${p.author_id}">${isFollowing ? 'متابَع' : 'متابعة'}</button>` : ''}
+                            </div>
+                            <div class="post-date">${new Date(p.created_at).toLocaleString('ar')}</div>
+                        </div>
+                    </div>
+                    ${p.image ? `<img class="post-image" src="${p.image}" loading="lazy" onerror="this.src='https://picsum.photos/id/1/800/600'">` : ''}
+                    <div class="post-content">
+                        <div class="post-title">${escapeHtml(p.title)} <span class="category-badge">${p.category || 'عام'}</span></div>
+                        <div class="post-text-short">${escapeHtml(shortContent)}</div>
+                        <div class="post-text-full" style="display:none;">${escapeHtml(p.content)}</div>
+                        <span class="more-btn" data-id="${p.id}">أكثر</span>
+                        ${p.hashtag ? `<div class="hashtag" data-hashtag="${escapeHtml(p.hashtag)}">#${escapeHtml(p.hashtag)}</div>` : ''}
+                    </div>
+                    <div class="action-bar">
+                        <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" data-id="${p.id}"><i class="fas fa-heart"></i> <span class="count">${formatNumber(p.likes_count)}</span></button>
+                        <button class="action-btn comment-btn" data-id="${p.id}"><i class="far fa-comment"></i> <span>${p.comments_count}</span></button>
+                        <button class="action-btn view-btn analytics-btn" data-id="${p.id}"><i class="fas fa-eye"></i> <span>${formatNumber(p.views_count)}</span></button>
+                        <button class="action-btn repost-btn ${isReposted ? 'reposted' : ''}" data-id="${p.id}"><i class="fas fa-retweet"></i> <span class="repost-count">${formatNumber(p.reposts_count)}</span></button>
+                        <button class="action-btn fav-btn ${isFav ? 'favorited' : ''}" data-id="${p.id}"><i class="${isFav ? 'fas fa-star' : 'far fa-star'}"></i> <span>${formatNumber(p.favorites_count)}</span></button>
+                        ${isOwner ? `<button class="action-btn settings-btn" data-id="${p.id}"><i class="fas fa-cog"></i> <span>إعدادات</span></button>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+        attachFeedEvents();
+    }
+    function attachFeedEvents() {
+        document.querySelectorAll('.like-btn').forEach(btn => { btn.onclick = e => { e.stopPropagation(); toggleLike(parseInt(btn.dataset.id), btn); }; });
+        document.querySelectorAll('.fav-btn').forEach(btn => { btn.onclick = e => { e.stopPropagation(); toggleFavorite(parseInt(btn.dataset.id), btn); }; });
+        document.querySelectorAll('.repost-btn').forEach(btn => { btn.onclick = e => { e.stopPropagation(); toggleRepost(parseInt(btn.dataset.id), btn); }; let timer; btn.ontouchstart = btn.onmousedown = e => { timer = setTimeout(() => openShareAdvanced(parseInt(btn.dataset.id)), 300); }; btn.ontouchend = btn.onmouseup = () => clearTimeout(timer); });
+        document.querySelectorAll('.follow-btn').forEach(btn => { btn.onclick = e => { e.stopPropagation(); toggleFollow(parseInt(btn.dataset.authorId), btn); }; });
+        document.querySelectorAll('.comment-btn').forEach(btn => { btn.onclick = e => { e.stopPropagation(); openComments(parseInt(btn.dataset.id)); }; });
+        document.querySelectorAll('.analytics-btn').forEach(btn => { let timer; btn.ontouchstart = btn.onmousedown = e => { timer = setTimeout(() => openAnalytics(parseInt(btn.dataset.id)), 300); }; btn.ontouchend = btn.onmouseup = () => clearTimeout(timer); });
+        document.querySelectorAll('.settings-btn').forEach(btn => { btn.onclick = e => { e.stopPropagation(); openPostSettings(parseInt(btn.dataset.id)); }; });
+        document.querySelectorAll('.post-card').forEach(card => { let timer; card.ontouchstart = card.onmousedown = e => { if (!e.target.closest('.action-btn')) timer = setTimeout(() => openDownloadOptions(parseInt(card.dataset.id)), 300); }; card.ontouchend = card.onmouseup = () => clearTimeout(timer); });
+        document.querySelectorAll('.author-avatar').forEach(avatar => { avatar.onclick = e => { e.stopPropagation(); window.location.href = `public-profile.html?user=${avatar.dataset.authorId}`; }; });
+        document.querySelectorAll('.hashtag').forEach(tag => { tag.onclick = e => { e.stopPropagation(); window.location.href = `search.html?q=${encodeURIComponent(tag.innerText.substring(1))}`; }; });
+        document.querySelectorAll('.more-btn').forEach(btn => { btn.onclick = e => { e.stopPropagation(); toggleFullText(btn.dataset.id); }; });
+    }
+    function toggleFullText(postId) {
+        const card = document.querySelector(`.post-card[data-id="${postId}"]`);
+        if (!card) return;
+        const shortDiv = card.querySelector('.post-text-short');
+        const fullDiv = card.querySelector('.post-text-full');
+        const moreBtn = card.querySelector('.more-btn');
+        if (shortDiv.style.display !== 'none') {
+            shortDiv.style.display = 'none';
+            fullDiv.style.display = 'block';
+            moreBtn.innerText = 'أقل';
+        } else {
+            shortDiv.style.display = 'block';
+            fullDiv.style.display = 'none';
+            moreBtn.innerText = 'أكثر';
+        }
+    }
+    async function increaseView(btn) {
+        const postId = parseInt(btn.dataset.id);
+        await supabase.rpc('increment_views', { row_id: postId });
+        const countSpan = btn.querySelector('span');
+        let current = parseInt(countSpan.innerText.replace(/[^0-9]/g, ''));
+        countSpan.innerText = formatNumber(current + 1);
+    }
+    async function openAnalytics(postId) {
+        const { data: post, error } = await supabase.from('posts').select('*').eq('id', postId).single();
+        if (error) { showToast(error.message, true); return; }
+        const favCount = post.favorites_count || 0;
+        const interactionRate = ((post.likes_count + post.comments_count + favCount + post.reposts_count) / (post.views_count || 1)) * 100;
+        const html = `<div><strong>👁️ المشاهدات:</strong> ${formatNumber(post.views_count)}</div><div><strong>💬 التعليقات:</strong> ${post.comments_count}</div><div><strong>⭐ الحفظ (مفضلة):</strong> ${formatNumber(favCount)}</div><div><strong>🔁 إعادة النشر:</strong> ${formatNumber(post.reposts_count)}</div><div><strong>📊 نسبة التفاعل:</strong> ${interactionRate.toFixed(1)}%</div>`;
+        document.getElementById('analyticsContent').innerHTML = html;
+        document.getElementById('analyticsSheet').classList.add('open');
+        document.getElementById('analyticsOverlay').classList.add('show');
+    }
+    function closeAnalyticsSheet() { document.getElementById('analyticsSheet').classList.remove('open'); document.getElementById('analyticsOverlay').classList.remove('show'); }
+    document.getElementById('closeAnalyticsSheet').onclick = closeAnalyticsSheet;
+    document.getElementById('analyticsOverlay').onclick = closeAnalyticsSheet;
+
+    async function openComments(postId) {
+        const comments = await fetchComments(postId);
+        currentPostCommentsId = postId;
+        const container = document.getElementById('commentsList');
+        let html = '';
+        comments?.forEach(c => { html += `<div class="comment-item" data-comment-id="${c.id}"><div class="comment-author">${escapeHtml(c.users?.username || c.user_id)}</div><div class="comment-text">${escapeHtml(c.text)}</div><div class="comment-actions"><span class="like-comment" data-id="${c.id}">❤️ ${c.likes}</span></div></div>`; });
+        container.innerHTML = html || '<p style="text-align:center;color:#777;">لا توجد تعليقات</p>';
+        document.querySelectorAll('.like-comment').forEach(el => { el.onclick = async () => { const commentId = parseInt(el.dataset.id); await supabase.rpc('increment_comment_likes', { comment_id: commentId }); const currentLikes = parseInt(el.innerText.match(/\d+/)?.[0] || 0); el.innerText = `❤️ ${currentLikes + 1}`; }; });
+        document.getElementById('commentSheet').classList.add('open');
+        document.getElementById('commentOverlay').classList.add('show');
+    }
+    document.getElementById('submitCommentBtn').onclick = async () => {
+        const text = document.getElementById('newCommentText').value.trim();
+        if (!text || !currentPostCommentsId) { showToast('لا يوجد تعليق أو لم يتم اختيار منشور', true); return; }
+        const success = await addComment(currentPostCommentsId, text);
+        if (success) { document.getElementById('newCommentText').value = ''; openComments(currentPostCommentsId); renderFeed(); }
+    };
+    function closeCommentSheet() { document.getElementById('commentSheet').classList.remove('open'); document.getElementById('commentOverlay').classList.remove('show'); }
+    document.getElementById('closeCommentSheet').onclick = closeCommentSheet;
+    document.getElementById('commentOverlay').onclick = closeCommentSheet;
+
+    async function openShareAdvanced(postId) {
+        const { data: post } = await supabase.from('posts').select('title').eq('id', postId).single();
+        currentPostForShare = { id: postId, title: post.title };
+        const { data: friends } = await supabase.from('follows').select('following_id, users:following_id (username)').eq('follower_id', currentUser.id);
+        const container = document.getElementById('friendsShareList');
+        container.innerHTML = friends?.map(f => `<div data-friend-id="${f.following_id}" style="padding:8px; border-bottom:1px solid #2c2c2c; cursor:pointer;">${escapeHtml(f.users?.username)}</div>`).join('') || '<div>لا يوجد أصدقاء</div>';
+        document.querySelectorAll('[data-friend-id]').forEach(el => { el.onclick = () => { showToast(`تم إرسال المنشور إلى ${el.innerText}`); closeShareAdvancedSheet(); }; });
+        document.getElementById('shareAdvancedSheet').classList.add('open');
+        document.getElementById('shareAdvancedOverlay').classList.add('show');
+    }
+    function closeShareAdvancedSheet() { document.getElementById('shareAdvancedSheet').classList.remove('open'); document.getElementById('shareAdvancedOverlay').classList.remove('show'); }
+    document.getElementById('closeShareAdvancedSheet').onclick = closeShareAdvancedSheet;
+    document.getElementById('shareAdvancedOverlay').onclick = closeShareAdvancedSheet;
+    document.getElementById('copyLinkBtn').onclick = () => { const link = `${window.location.origin}${window.location.pathname}?post=${currentPostForShare?.id}`; navigator.clipboard.writeText(link); showToast('📋 تم نسخ الرابط'); closeShareAdvancedSheet(); };
+
+    async function openPostSettings(postId) {
+        const { data: post, error } = await supabase.from('posts').select('*').eq('id', postId).single();
+        if (error || post.author_id !== currentUser.id) { showToast('لا يمكنك تعديل هذا المنشور', true); return; }
+        currentPostForSettings = post;
+        document.getElementById('editTitle').value = post.title;
+        document.getElementById('editContent').value = post.content;
+        document.getElementById('editImage').value = post.image || '';
+        document.getElementById('editHashtag').value = post.hashtag || '';
+        document.getElementById('editCategory').value = post.category || 'أخبار';
+        document.getElementById('privacyPost').value = post.privacy_post || 'public';
+        document.getElementById('privacyDuration').value = post.duration || 'unlimited';
+        document.getElementById('privacyComment').value = post.privacy_comment || 'all';
+        document.getElementById('privacyRepost').value = post.privacy_repost || 'all';
+        document.getElementById('privacyLike').value = post.privacy_like || 'all';
+        document.getElementById('postSettingsSheet').classList.add('open');
+        document.getElementById('postSettingsOverlay').classList.add('show');
+    }
+    function closeSettingsSheet() { document.getElementById('postSettingsSheet').classList.remove('open'); document.getElementById('postSettingsOverlay').classList.remove('show'); }
+    document.getElementById('closeSettingsSheet').onclick = closeSettingsSheet;
+    document.getElementById('postSettingsOverlay').onclick = closeSettingsSheet;
+    document.querySelectorAll('[data-settings-tab]').forEach(tab => { tab.onclick = () => { document.querySelectorAll('[data-settings-tab]').forEach(t => t.classList.remove('active')); tab.classList.add('active'); const target = tab.dataset.settingsTab; document.getElementById('settingsEditTab').style.display = target === 'edit' ? 'block' : 'none'; document.getElementById('settingsPrivacyTab').style.display = target === 'privacy' ? 'block' : 'none'; document.getElementById('settingsInteractTab').style.display = target === 'interact' ? 'block' : 'none'; }; });
+    document.getElementById('saveEditBtn').onclick = async () => {
+        if (!currentPostForSettings) return;
+        const updated = {
+            title: document.getElementById('editTitle').value,
+            content: document.getElementById('editContent').value,
+            image: document.getElementById('editImage').value,
+            hashtag: document.getElementById('editHashtag').value,
+            category: document.getElementById('editCategory').value,
+            privacy_post: document.getElementById('privacyPost').value,
+            duration: document.getElementById('privacyDuration').value,
+            privacy_comment: document.getElementById('privacyComment').value,
+            privacy_repost: document.getElementById('privacyRepost').value,
+            privacy_like: document.getElementById('privacyLike').value,
+            edit_count: (currentPostForSettings.edit_count || 0) + 1
+        };
+        if (updated.edit_count > 3) { showToast('لا يمكن التعديل أكثر من 3 مرات', true); closeSettingsSheet(); return; }
+        const { error } = await supabase.from('posts').update(updated).eq('id', currentPostForSettings.id);
+        if (error) { showToast(error.message, true); return; }
+        showToast('✅ تم حفظ التغييرات'); closeSettingsSheet(); renderFeed();
+    };
+
+    async function openDownloadOptions(postId) {
+        const { data: post } = await supabase.from('posts').select('*').eq('id', postId).single();
+        currentPostForDownload = post;
+        document.getElementById('downloadSheet').classList.add('open');
+        document.getElementById('downloadOverlay').classList.add('show');
+    }
+    function closeDownloadSheet() { document.getElementById('downloadSheet').classList.remove('open'); document.getElementById('downloadOverlay').classList.remove('show'); document.getElementById('downloadProgress').style.display = 'none'; }
+    document.getElementById('closeDownloadSheet').onclick = closeDownloadSheet;
+    document.getElementById('downloadOverlay').onclick = closeDownloadSheet;
+    document.getElementById('downloadImageOption').onclick = () => {
+        if (!currentPostForDownload?.image) { showToast('لا توجد صورة للتحميل', true); return; }
+        const progressDiv = document.getElementById('downloadProgress'); const progressFill = document.getElementById('progressFill');
+        progressDiv.style.display = 'block'; let percent = 0; const interval = setInterval(() => { percent += 10; progressFill.style.width = percent + '%'; if (percent >= 100) { clearInterval(interval); const link = document.createElement('a'); link.href = currentPostForDownload.image; link.download = `ramz_x_image_${currentPostForDownload.id}.jpg`; link.click(); setTimeout(() => { closeDownloadSheet(); showToast('✅ تم تنزيل الصورة'); }, 500); } }, 100);
+    };
+    document.getElementById('downloadPdfOption').onclick = async () => {
+        if (!currentPostForDownload) return; showToast('جاري تجهيز ملف PDF...'); const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4'); const pageWidth = pdf.internal.pageSize.getWidth(); let y = 10; pdf.setFont('helvetica', 'bold'); pdf.setFontSize(18); pdf.text(currentPostForDownload.title, 10, y); y += 10; pdf.setFontSize(12); pdf.setFont('helvetica', 'normal'); const splitText = pdf.splitTextToSize(currentPostForDownload.content, pageWidth - 20); pdf.text(splitText, 10, y); y += splitText.length * 7; if (currentPostForDownload.image) { try { const img = new Image(); img.crossOrigin = "Anonymous"; img.src = currentPostForDownload.image; await new Promise((resolve) => { img.onload = resolve; }); const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0); const imgData = canvas.toDataURL('image/jpeg'); const imgWidth = 80; const imgHeight = (img.height * imgWidth) / img.width; pdf.addImage(imgData, 'JPEG', 10, y, imgWidth, imgHeight); } catch (e) { console.error(e); } } pdf.save(`ramz_x_article_${currentPostForDownload.id}.pdf`); closeDownloadSheet(); showToast('✅ تم تنزيل المقال كـ PDF');
+    };
+
+    // --- دوال إنشاء المنشور (مأخوذة من create-post.html) ---
+    // محرر النص الغني
+    const editor = document.getElementById('editorContent');
+    document.querySelectorAll('.tool-btn').forEach(btn => { btn.addEventListener('click', (e) => { const cmd = btn.dataset.cmd; if (cmd === 'createLink') { let url = prompt("أدخل الرابط:"); if (url) document.execCommand(cmd, false, url); } else { document.execCommand(cmd, false, null); } editor.focus(); }); });
+    document.getElementById('textColor').addEventListener('input', e => document.execCommand('foreColor', false, e.target.value));
+    document.getElementById('fontFamily').addEventListener('change', e => document.execCommand('fontName', false, e.target.value));
+    document.getElementById('fontSize').addEventListener('change', e => document.execCommand('fontSize', false, e.target.value.replace('px','')));
+
+    // رفع صورة محلية
+    const fileInput = document.getElementById('postImageFile');
+    const preview = document.getElementById('imagePreview');
+    fileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) { if (uploadedImageURL && uploadedImageURL.startsWith('blob:')) URL.revokeObjectURL(uploadedImageURL); uploadedImageURL = URL.createObjectURL(file); preview.src = uploadedImageURL; preview.style.display = 'block'; } });
+
+    // كاميرا
+    window.CameraLibrary = {
+        initCamera: (videoElement, facingMode = 'user') => { return navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 } } }); },
+        applyEffect: (videoElement, effectName) => { if (effectName && effectName.includes('1')) videoElement.style.filter = 'grayscale(1)'; else if (effectName && effectName.includes('2')) videoElement.style.filter = 'sepia(1)'; else if (effectName && effectName.includes('3')) videoElement.style.filter = 'brightness(1.5)'; else if (effectName && effectName.includes('4')) videoElement.style.filter = 'contrast(1.5)'; else if (effectName && effectName.includes('5')) videoElement.style.filter = 'hue-rotate(90deg)'; else videoElement.style.filter = 'none'; },
+        applyTemplate: (videoElement, templateName) => { videoElement.style.border = (templateName && templateName.includes('1')) ? '3px solid red' : 'none'; },
+        capturePhoto: (videoElement, selectedEffect, callback) => { const canvas = document.createElement('canvas'); canvas.width = videoElement.videoWidth; canvas.height = videoElement.videoHeight; const ctx = canvas.getContext('2d'); ctx.drawImage(videoElement, 0, 0); if (selectedEffect) { const imgData = ctx.getImageData(0,0,canvas.width,canvas.height); const data = imgData.data; if (selectedEffect.includes('1')) { for(let i=0;i<data.length;i+=4){let avg=(data[i]+data[i+1]+data[i+2])/3; data[i]=data[i+1]=data[i+2]=avg;} } else if (selectedEffect.includes('2')) { for(let i=0;i<data.length;i+=4){let r=data[i],g=data[i+1],b=data[i+2]; data[i]=Math.min(255,r*0.393+g*0.769+b*0.189); data[i+1]=Math.min(255,r*0.349+g*0.686+b*0.168); data[i+2]=Math.min(255,r*0.272+g*0.534+b*0.131);} } else if (selectedEffect.includes('3')) { for(let i=0;i<data.length;i+=4){data[i]=Math.min(255,data[i]+50); data[i+1]=Math.min(255,data[i+1]+50); data[i+2]=Math.min(255,data[i+2]+50);} } else if (selectedEffect.includes('4')) { for(let i=0;i<data.length;i+=4){data[i]=Math.min(255,(data[i]-128)*1.2+128); data[i+1]=(data[i+1]-128)*1.2+128; data[i+2]=(data[i+2]-128)*1.2+128;} } ctx.putImageData(imgData,0,0); } canvas.toBlob(blob => { callback(URL.createObjectURL(blob)); }, 'image/jpeg', 1.0); }
+    };
+    const cameraFull = document.getElementById('cameraFullscreen');
+    async function initCameraWithFacing(facing) { if (videoStream) videoStream.getTracks().forEach(t => t.stop()); try { const stream = await window.CameraLibrary.initCamera(null, facing); videoStream = stream; videoElement = document.getElementById('fullscreenVideo'); videoElement.srcObject = stream; videoElement.play(); if (facing === 'user') videoElement.style.transform = 'scaleX(-1)'; else videoElement.style.transform = 'scaleX(1)'; } catch(e) { showToast("تعذر الوصول إلى الكاميرا", true); } }
+    async function startCamera() { await initCameraWithFacing(currentFacingMode); }
+    function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
+    async function switchCamera() { currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user'; await initCameraWithFacing(currentFacingMode); }
+    const effectNames = Array.from({length:50}, (_,i)=>`مؤثر ${i+1}`); const templateNames = Array.from({length:50}, (_,i)=>`قالب ${i+1}`);
+    function renderEffects() { const container = document.getElementById('effectsScroll'); container.innerHTML = ''; effectNames.forEach(eff => { const div = document.createElement('div'); div.className = 'effect-item'; div.innerHTML = `<canvas width="35" height="35"></canvas><span>${eff}</span>`; div.addEventListener('click', () => { selectedEffect = eff; window.CameraLibrary.applyEffect(videoElement, eff); }); container.appendChild(div); }); }
+    function renderTemplates() { const container = document.getElementById('templatesScroll'); container.innerHTML = ''; templateNames.forEach(tpl => { const div = document.createElement('div'); div.className = 'template-item'; div.innerHTML = `<canvas width="35" height="35"></canvas><span>${tpl}</span>`; div.addEventListener('click', () => { selectedTemplate = tpl; window.CameraLibrary.applyTemplate(videoElement, tpl); }); container.appendChild(div); }); }
+    function capturePhoto() { if (!videoElement) return; window.CameraLibrary.capturePhoto(videoElement, selectedEffect, (imageUrl) => { if (uploadedImageURL && uploadedImageURL.startsWith('blob:')) URL.revokeObjectURL(uploadedImageURL); uploadedImageURL = imageUrl; preview.src = imageUrl; preview.style.display = 'block'; cameraFull.classList.remove('open'); stopCamera(); }); }
+    async function searchEffectOrTemplate() { let kw = prompt("ابحث عن مؤثر أو قالب (سيتم محاكاة التحميل):"); if (kw) { showToast(`تم العثور على "${kw}" (تجريبي). سيتم تطبيقه.`); selectedEffect = kw; if (videoElement) window.CameraLibrary.applyEffect(videoElement, kw); } }
+    document.querySelector('[data-tool="camera"]').addEventListener('click', async () => { await startCamera(); renderEffects(); renderTemplates(); cameraFull.classList.add('open'); });
+    document.getElementById('closeFullscreenCamera').addEventListener('click', () => { cameraFull.classList.remove('open'); stopCamera(); });
+    document.getElementById('capturePhotoBtn').addEventListener('click', capturePhoto);
+    document.getElementById('noEffectBtn').addEventListener('click', () => { selectedEffect = null; selectedTemplate = null; if(videoElement){videoElement.style.filter='none';videoElement.style.border='none';} capturePhoto(); });
+    document.getElementById('switchCameraBtn').addEventListener('click', async () => { await switchCamera(); });
+    document.getElementById('searchEffectBtn').addEventListener('click', searchEffectOrTemplate);
+
+    // رابط صورة
+    document.querySelector('[data-tool="url"]').addEventListener('click', () => { let url = prompt("أدخل رابط الصورة (جودة عالية):"); if (url) { if (uploadedImageURL && uploadedImageURL.startsWith('blob:')) URL.revokeObjectURL(uploadedImageURL); uploadedImageURL = url; preview.src = url; preview.style.display = 'block'; } });
+
+    // تعديل الصورة
+    const editModal = document.getElementById('editModal');
+    const editCanvas = document.getElementById('editCanvas');
+    document.querySelector('[data-tool="edit-image"]').addEventListener('click', () => { if (!uploadedImageURL) { showToast("لا توجد صورة محملة", true); return; } currentEditImage = new Image(); currentEditImage.crossOrigin = "Anonymous"; currentEditImage.onload = () => { editCanvas.width = currentEditImage.width; editCanvas.height = currentEditImage.height; editCtx = editCanvas.getContext('2d'); editCtx.drawImage(currentEditImage, 0, 0); editModal.classList.add('open'); }; currentEditImage.src = uploadedImageURL; });
+    function applyFiltersToEdit() { if (!editCtx) return; editCtx.clearRect(0,0,editCanvas.width,editCanvas.height); editCtx.save(); editCtx.translate(editCanvas.width/2, editCanvas.height/2); editCtx.rotate(rotation * Math.PI/180); editCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1); editCtx.drawImage(currentEditImage, -currentEditImage.width/2, -currentEditImage.height/2); editCtx.restore(); }
+    document.getElementById('rotateLeftBtn').addEventListener('click', () => { rotation += 90; applyFiltersToEdit(); });
+    document.getElementById('flipHorizontalBtn').addEventListener('click', () => { flipH = !flipH; applyFiltersToEdit(); });
+    document.getElementById('flipVerticalBtn').addEventListener('click', () => { flipV = !flipV; applyFiltersToEdit(); });
+    document.getElementById('brightnessBtn').addEventListener('click', () => { const imgData = editCtx.getImageData(0,0,editCanvas.width,editCanvas.height); for(let i=0;i<imgData.data.length;i+=4){ imgData.data[i]=Math.min(255,imgData.data[i]+30); imgData.data[i+1]=Math.min(255,imgData.data[i+1]+30); imgData.data[i+2]=Math.min(255,imgData.data[i+2]+30); } editCtx.putImageData(imgData,0,0); });
+    document.getElementById('contrastBtn').addEventListener('click', () => { const imgData = editCtx.getImageData(0,0,editCanvas.width,editCanvas.height); for(let i=0;i<imgData.data.length;i+=4){ imgData.data[i]=Math.min(255,(imgData.data[i]-128)*1.2+128); imgData.data[i+1]=Math.min(255,(imgData.data[i+1]-128)*1.2+128); imgData.data[i+2]=Math.min(255,(imgData.data[i+2]-128)*1.2+128); } editCtx.putImageData(imgData,0,0); });
+    document.getElementById('saturationBtn').addEventListener('click', () => { const imgData = editCtx.getImageData(0,0,editCanvas.width,editCanvas.height); for(let i=0;i<imgData.data.length;i+=4){ let r=imgData.data[i],g=imgData.data[i+1],b=imgData.data[i+2]; let gray=0.3*r+0.59*g+0.11*b; let sat=1.3; imgData.data[i]=Math.min(255,gray+sat*(r-gray)); imgData.data[i+1]=Math.min(255,gray+sat*(g-gray)); imgData.data[i+2]=Math.min(255,gray+sat*(b-gray)); } editCtx.putImageData(imgData,0,0); });
+    document.getElementById('grayscaleBtn').addEventListener('click', () => { const imgData = editCtx.getImageData(0,0,editCanvas.width,editCanvas.height); for(let i=0;i<imgData.data.length;i+=4){ let avg=(imgData.data[i]+imgData.data[i+1]+imgData.data[i+2])/3; imgData.data[i]=imgData.data[i+1]=imgData.data[i+2]=avg; } editCtx.putImageData(imgData,0,0); });
+    document.getElementById('addWatermarkBtn').addEventListener('click', () => { if (!currentUser) return; const watermark = `Ramz-X_${currentUser.username}`; editCtx.font = "bold 28px 'Cairo'"; editCtx.fillStyle = "rgba(255,255,255,0.75)"; editCtx.fillText(watermark, 20, editCanvas.height-40); editCtx.fillStyle = "rgba(0,0,0,0.5)"; editCtx.fillText(watermark, 22, editCanvas.height-38); editCtx.fillStyle = "white"; editCtx.fillText(watermark, 20, editCanvas.height-40); showToast("تمت إضافة العلامة المائية: " + watermark); });
+    document.getElementById('applyEditBtn').addEventListener('click', () => { editCanvas.toBlob(blob => { const url = URL.createObjectURL(blob); if (uploadedImageURL) URL.revokeObjectURL(uploadedImageURL); uploadedImageURL = url; preview.src = url; preview.style.display = 'block'; editModal.classList.remove('open'); }, 'image/jpeg', 1.0); });
+
+    // ابتكار مقال AI
+    const aiArticleModal = document.getElementById('aiArticleModal');
+    document.querySelector('[data-tool="ai-article"]').addEventListener('click', () => aiArticleModal.classList.add('open'));
+    let generatedText = "";
+    document.getElementById('generateArticleBtn').addEventListener('click', () => { const title = document.getElementById('articleTitle').value.trim(); if (!title) { showToast("أدخل عنوان المقال", true); return; } const genDiv = document.getElementById('generatedArticle'); genDiv.style.display = 'block'; genDiv.innerHTML = "جاري التوليد..."; setTimeout(() => { generatedText = `# ${title}\n\n${title} هو موضوع مهم يستحق النقاش. في هذا المقال سنتعرف على جوانب متعددة لهذا الموضوع.\n\nأولاً: مقدمة عن ${title} وتأثيرها في المجتمع.\n\nثانياً: تحليل معمق وأمثلة تطبيقية.\n\nثالثاً: خاتمة وتوصيات للمستقبل.\n\nتم التوليد بواسطة الذكاء الاصطناعي Ramz-X.`; genDiv.innerHTML = `<div style="white-space:pre-wrap;">${generatedText}</div>`; document.getElementById('insertArticleBtn').style.display = 'block'; }, 1000); });
+    document.getElementById('insertArticleBtn').addEventListener('click', () => { editor.innerText += "\n\n" + generatedText; aiArticleModal.classList.remove('open'); document.getElementById('articleTitle').value = ''; document.getElementById('generatedArticle').style.display = 'none'; document.getElementById('insertArticleBtn').style.display = 'none'; });
+
+    // توليد صورة AI
+    const aiImageGenModal = document.getElementById('aiImageGenModal');
+    document.querySelector('[data-tool="ai-image-gen"]').addEventListener('click', () => aiImageGenModal.classList.add('open'));
+    let generatedImageUrl = "";
+    document.getElementById('generateImageBtn').addEventListener('click', () => { const prompt = document.getElementById('imagePrompt').value.trim(); if (!prompt) { showToast("أدخل وصفاً للصورة", true); return; } const resultDiv = document.getElementById('generatedImageResult'); resultDiv.innerHTML = "جاري توليد الصورة..."; setTimeout(() => { const randomId = Math.floor(Math.random() * 200); generatedImageUrl = `https://picsum.photos/id/${randomId}/1200/800`; resultDiv.innerHTML = `<img src="${generatedImageUrl}" style="width:100%;border-radius:1rem;">`; document.getElementById('useGeneratedImageBtn').style.display = 'block'; }, 1200); });
+    document.getElementById('useGeneratedImageBtn').addEventListener('click', () => { if (uploadedImageURL && uploadedImageURL.startsWith('blob:')) URL.revokeObjectURL(uploadedImageURL); uploadedImageURL = generatedImageUrl; preview.src = generatedImageUrl; preview.style.display = 'block'; aiImageGenModal.classList.remove('open'); });
+
+    // ترجمة
+    document.querySelector('[data-tool="translate"]').addEventListener('click', async () => { const text = editor.innerText; if (!text.trim()) { showToast("لا يوجد نص للترجمة", true); return; } const isArabic = /[\u0600-\u06FF]/.test(text); const sourceLang = isArabic ? 'ar' : 'en'; const targetLang = isArabic ? 'en' : 'ar'; const btn = document.querySelector('[data-tool="translate"]'); const originalText = btn.innerHTML; btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> جاري الترجمة...'; try { const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`; const response = await fetch(url); const data = await response.json(); const translated = data.responseData.translatedText; editor.innerText = translated; } catch(err) { showToast("حدث خطأ في الترجمة", true); } finally { btn.innerHTML = originalText; } });
+
+    // استبيان
+    const pollModal = document.getElementById('pollModal');
+    document.querySelector('[data-tool="poll"]').addEventListener('click', () => pollModal.classList.add('open'));
+    function addPollOption(value = '') { const container = document.getElementById('pollOptionsContainer'); const div = document.createElement('div'); div.className = 'poll-option'; div.style.marginBottom = '0.5rem'; div.innerHTML = `<input type="text" placeholder="خيار" class="pollOptionInput" style="width:80%;margin-left:0.5rem;" value="${value}"><button class="removeOptionBtn" style="background:#ef4444;padding:0.2rem 0.6rem;">حذف</button>`; container.appendChild(div); div.querySelector('.removeOptionBtn').addEventListener('click', () => div.remove()); }
+    document.getElementById('addOptionBtn').addEventListener('click', () => addPollOption());
+    addPollOption(); addPollOption();
+    document.getElementById('savePollBtn').addEventListener('click', () => { const question = document.getElementById('pollQuestion').value.trim(); const optionInputs = document.querySelectorAll('.pollOptionInput'); const options = Array.from(optionInputs).map(inp => inp.value.trim()).filter(v => v); if (!question || options.length < 2) { showToast("يجب إدخال سؤال وخيارين على الأقل", true); return; } currentPoll = { question, options }; const pollHtml = `<div class="poll-question"><strong>📊 استبيان: ${question}</strong><ul>${options.map(opt => `<li><input type="radio" name="poll"> ${opt}</li>`).join('')}</ul><button class="vote-btn" style="background:#ff0050; border:none; padding:4px 12px; border-radius:20px; color:white;">تصويت</button></div>`; document.getElementById('pollContainer').innerHTML = pollHtml; pollModal.classList.remove('open'); document.getElementById('pollQuestion').value = ''; document.getElementById('pollOptionsContainer').innerHTML = ''; addPollOption(); addPollOption(); });
+
+    // الموقع
+    document.querySelector('[data-tool="location"]').addEventListener('click', () => { if ("geolocation" in navigator) { navigator.geolocation.getCurrentPosition(position => { const lat = position.coords.latitude; const lng = position.coords.longitude; currentLocation = { lat, lng }; editor.innerText += `\n📍 الموقع: ${lat}, ${lng}\n`; showToast("تم إضافة الموقع."); }, () => showToast("تعذر الحصول على الموقع", true)); } else showToast("المتصفح لا يدعم تحديد الموقع", true); });
+
+    // تحدي
+    const challengeModal = document.getElementById('challengeModal');
+    document.querySelector('[data-tool="challenge"]').addEventListener('click', () => challengeModal.classList.add('open'));
+    const challengeTypeSelect = document.getElementById('challengeType');
+    const extraFieldGroup = document.getElementById('extraFieldGroup');
+    const extraLabel = document.getElementById('extraLabel');
+    const extraValueInput = document.getElementById('extraValue');
+    challengeTypeSelect.addEventListener('change', () => { const type = challengeTypeSelect.value; if (type === 'ملف Excel') { extraLabel.innerText = 'رابط ملف Excel'; extraFieldGroup.style.display = 'block'; } else if (type === 'ملفي الشخصي') { extraLabel.innerText = 'سيتم إضافة رابط ملفك الشخصي تلقائياً'; extraValueInput.value = `profile.html?user=${currentUser?.username || ''}`; extraFieldGroup.style.display = 'none'; } else if (type === 'ملف مستخدم آخر على المنصة') { extraLabel.innerText = 'اسم المستخدم الآخر'; extraFieldGroup.style.display = 'block'; } else { extraFieldGroup.style.display = 'none'; } });
+    document.getElementById('saveChallengeBtn').addEventListener('click', () => { const type = challengeTypeSelect.value; const title = document.getElementById('challengeTitle').value.trim(); const desc = document.getElementById('challengeDesc').value.trim(); if (!title) { showToast("عنوان التحدي مطلوب", true); return; } let extra = ""; if (type === 'ملف Excel') extra = extraValueInput.value; else if (type === 'ملف مستخدم آخر على المنصة') extra = extraValueInput.value; else if (type === 'ملفي الشخصي') extra = `profile.html?user=${currentUser?.username || ''}`; currentChallenge = { type, title, description: desc, extra }; const challengeHtml = `<div class="challenge-card"><strong>🏆 تحدي: ${type}</strong><br><b>${title}</b><p>${desc}</p>${extra ? `<small>${extra}</small>` : ''}</div>`; document.getElementById('challengeContainer').innerHTML = challengeHtml; challengeModal.classList.remove('open'); document.getElementById('challengeTitle').value = ''; document.getElementById('challengeDesc').value = ''; extraValueInput.value = ''; challengeTypeSelect.value = 'مسابقة'; extraFieldGroup.style.display = 'none'; });
+
+    // فلاتر
+    const filtersModal = document.getElementById('filtersModal');
+    const filterNames = ["أسود/أبيض", "سيبيا", "توهج", "درجات دافئة", "عتيق", "سينمائي", "حدة", "زيتي", "نقطي", "مرآة", "مائي", "فسيفساء", "كاريكاتير", "نيون", "فحم", "باستيل", "طباشير", "لومي", "فيديو قديم", "ثلاثي الأبعاد"];
+    document.querySelector('[data-tool="filters"]').addEventListener('click', () => { if (!uploadedImageURL) { showToast("لا توجد صورة لتطبيق الفلاتر عليها", true); return; } const img = new Image(); img.crossOrigin = "Anonymous"; img.onload = () => { originalImageForFilters = img; generateFilterThumbnails(); filtersModal.classList.add('open'); }; img.src = uploadedImageURL; });
+    function generateFilterThumbnails() { const gallery = document.getElementById('filtersGallery'); gallery.innerHTML = ''; filterNames.forEach((filter, idx) => { const thumbDiv = document.createElement('div'); thumbDiv.className = 'filter-thumb'; thumbDiv.setAttribute('data-filter', filter); const canvas = document.createElement('canvas'); canvas.width = 80; canvas.height = 80; const ctx = canvas.getContext('2d'); ctx.drawImage(originalImageForFilters, 0, 0, 80, 80); thumbDiv.appendChild(canvas); const label = document.createElement('div'); label.innerText = filter; label.style.fontSize = "0.7rem"; thumbDiv.appendChild(label); thumbDiv.addEventListener('click', () => { document.querySelectorAll('.filter-thumb').forEach(el => el.classList.remove('selected')); thumbDiv.classList.add('selected'); selectedFilterName = filter; }); gallery.appendChild(thumbDiv); }); if (gallery.firstChild) gallery.firstChild.classList.add('selected'); selectedFilterName = filterNames[0]; }
+    function applyFullFilterToImage(filter, imgElement, callback) { const canvas = document.createElement('canvas'); canvas.width = imgElement.width; canvas.height = imgElement.height; const ctx = canvas.getContext('2d'); ctx.drawImage(imgElement, 0, 0); const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height); const data = imageData.data; switch(filter) { case "أسود/أبيض": for(let i=0;i<data.length;i+=4){let avg=(data[i]+data[i+1]+data[i+2])/3; data[i]=data[i+1]=data[i+2]=avg;} break; case "سيبيا": for(let i=0;i<data.length;i+=4){let r=data[i],g=data[i+1],b=data[i+2]; data[i]=Math.min(255,r*0.393+g*0.769+b*0.189); data[i+1]=Math.min(255,r*0.349+g*0.686+b*0.168); data[i+2]=Math.min(255,r*0.272+g*0.534+b*0.131);} break; case "توهج": for(let i=0;i<data.length;i+=4){data[i]=Math.min(255,data[i]+50); data[i+1]=Math.min(255,data[i+1]+30);} break; case "درجات دافئة": for(let i=0;i<data.length;i+=4){data[i]=Math.min(255,data[i]+40); data[i+2]=Math.min(255,data[i+2]-20);} break; case "عتيق": for(let i=0;i<data.length;i+=4){data[i]*=0.9; data[i+1]*=0.85; data[i+2]*=0.7;} break; case "سينمائي": for(let i=0;i<data.length;i+=4){data[i]=Math.min(255,data[i]*1.1); data[i+1]=Math.min(255,data[i+1]*1.05);} break; case "مرآة": ctx.translate(canvas.width,0); ctx.scale(-1,1); ctx.drawImage(imgElement,0,0); ctx.setTransform(1,0,0,1,0,0); break; default: break; } ctx.putImageData(imageData, 0, 0); canvas.toBlob(blob => { callback(URL.createObjectURL(blob)); }, 'image/jpeg', 1.0); }
+    document.getElementById('applyFilterBtn').addEventListener('click', () => { if (!selectedFilterName || !originalImageForFilters) return; applyFullFilterToImage(selectedFilterName, originalImageForFilters, (newUrl) => { if (uploadedImageURL && uploadedImageURL.startsWith('blob:')) URL.revokeObjectURL(uploadedImageURL); uploadedImageURL = newUrl; preview.src = newUrl; preview.style.display = 'block'; filtersModal.classList.remove('open'); showToast("تم تطبيق الفلتر بجودة عالية."); }); });
+
+    // مسودات
+    function getDrafts() { return JSON.parse(localStorage.getItem(`drafts_${currentUser?.username || 'guest'}`)) || []; }
+    function saveDrafts(drafts) { localStorage.setItem(`drafts_${currentUser?.username || 'guest'}`, JSON.stringify(drafts)); }
+    function saveAsDraft() { let title = document.getElementById('postTitle').value.trim(); let content = editor.innerText.trim(); if (!title && !content) { showToast("⚠️ لا يمكن حفظ مسودة فارغة. أضف عنواناً أو محتوى على الأقل.", true); return; } let hashtag = document.getElementById('postHashtag').value.trim(); let category = document.getElementById('postCategory').value; let image = uploadedImageURL || null; let draft = { id: currentEditingDraftId || Date.now(), title, content, image, hashtag, category, poll: currentPoll, location: currentLocation, challenge: currentChallenge, updatedAt: new Date().toISOString() }; let drafts = getDrafts(); if (currentEditingDraftId) { let idx = drafts.findIndex(d => d.id === currentEditingDraftId); if (idx !== -1) drafts[idx] = draft; else drafts.push(draft); currentEditingDraftId = null; } else drafts.push(draft); saveDrafts(drafts); showToast("✅ تم حفظ المسودة"); }
+    function showDrafts() { let drafts = getDrafts(); const container = document.getElementById('draftsList'); if (drafts.length === 0) container.innerHTML = '<div style="text-align:center;padding:1rem;">📭 لا توجد مسودات</div>'; else { container.innerHTML = drafts.map(draft => `<div class="draft-item" data-id="${draft.id}"><div class="draft-title">${escapeHtml(draft.title) || 'بدون عنوان'}</div><div class="draft-date">آخر تحديث: ${new Date(draft.updatedAt).toLocaleString('ar')}</div><div class="draft-actions"><button class="load-draft" data-id="${draft.id}" style="background:#3b82f6; color:white;">تحميل</button><button class="delete-draft" data-id="${draft.id}" style="background:#dc2626; color:white;">حذف</button></div></div>`).join(''); document.querySelectorAll('.load-draft').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); loadDraft(parseInt(btn.dataset.id)); closeDraftsSheet(); })); document.querySelectorAll('.delete-draft').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); deleteDraft(parseInt(btn.dataset.id)); showDrafts(); })); } document.getElementById('draftsSheet').classList.add('open'); document.getElementById('draftsOverlay').classList.add('show'); }
+    function loadDraft(id) { let draft = getDrafts().find(d => d.id === id); if (draft) { document.getElementById('postTitle').value = draft.title || ''; editor.innerText = draft.content || ''; if (draft.image) { preview.src = draft.image; preview.style.display = 'block'; uploadedImageURL = draft.image; } else { preview.style.display = 'none'; uploadedImageURL = null; } document.getElementById('postHashtag').value = draft.hashtag || ''; document.getElementById('postCategory').value = draft.category || ''; currentPoll = draft.poll; if (currentPoll) document.getElementById('pollContainer').innerHTML = `<div class="poll-question"><strong>📊 استبيان: ${currentPoll.question}</strong><ul>${currentPoll.options.map(opt => `<li><input type="radio" name="poll"> ${opt}</li>`).join('')}</ul></div>`; else document.getElementById('pollContainer').innerHTML = ''; currentLocation = draft.location; currentChallenge = draft.challenge; if (currentChallenge) document.getElementById('challengeContainer').innerHTML = `<div class="challenge-card"><strong>🏆 تحدي: ${currentChallenge.type}</strong><br><b>${currentChallenge.title}</b><p>${currentChallenge.description}</p>${currentChallenge.extra ? `<small>${currentChallenge.extra}</small>` : ''}</div>`; else document.getElementById('challengeContainer').innerHTML = ''; currentEditingDraftId = draft.id; showToast("📂 تم تحميل المسودة."); } }
+    function deleteDraft(id) { let drafts = getDrafts().filter(d => d.id !== id); saveDrafts(drafts); if (currentEditingDraftId === id) currentEditingDraftId = null; showToast("🗑️ تم حذف المسودة"); }
+    function closeDraftsSheet() { document.getElementById('draftsSheet').classList.remove('open'); document.getElementById('draftsOverlay').classList.remove('show'); }
+    document.getElementById('draftBtn').addEventListener('click', saveAsDraft);
+    document.getElementById('showDraftsBtn').addEventListener('click', showDrafts);
+    document.getElementById('closeDraftsSheet').addEventListener('click', closeDraftsSheet);
+    document.getElementById('draftsOverlay').addEventListener('click', closeDraftsSheet);
+
+    // نشر المنشور
+    async function publishPost() {
+        if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+        let title = document.getElementById('postTitle').value.trim();
+        let content = editor.innerText.trim();
+        if (!title || !content) { showToast("⚠️ الرجاء إدخال عنوان ومحتوى للمنشور", true); return; }
+        let hashtag = document.getElementById('postHashtag').value.trim();
+        let category = document.getElementById('postCategory').value;
+        let image = uploadedImageURL || "https://picsum.photos/id/1/1200/800";
+        let type = (category === 'صورة' ? 'image' : 'article');
+        const postData = { title, content, image, hashtag, category, type };
+        showProgress('جاري نشر المنشور...', 2000);
+        const success = await createPost(postData);
+        if (success) { if (currentEditingDraftId) deleteDraft(currentEditingDraftId); setTimeout(() => { showToast("تم النشر بنجاح"); renderFeed(); showCreateScreen(false); }, 2000); }
+    }
+    document.getElementById('publishBtn').addEventListener('click', publishPost);
+    document.getElementById('backFromCreateBtn').addEventListener('click', () => showCreateScreen(false));
+
+    // إظهار/إخفاء شاشة الإنشاء
+    function showCreateScreen(show) {
+        const feedDiv = document.getElementById('feedScreen');
+        const createDiv = document.getElementById('createScreen');
+        if (show) {
+            feedDiv.style.display = 'none';
+            createDiv.style.display = 'block';
+        } else {
+            feedDiv.style.display = 'block';
+            createDiv.style.display = 'none';
+            renderFeed(); // تحديث التغذية بعد العودة
+        }
+    }
+    document.getElementById('createFooterBtn').addEventListener('click', (e) => { e.preventDefault(); showCreateScreen(true); });
+    document.getElementById('homeFooterBtn').addEventListener('click', (e) => { e.preventDefault(); showCreateScreen(false); });
+
+    // البحث والوضع الليلي
+    document.getElementById('searchBtn').onclick = () => window.location.href = 'search.html';
+    function applyTheme() { if (localStorage.getItem('darkMode') === 'true') { document.body.classList.add('dark'); document.body.classList.remove('light'); } else { document.body.classList.add('light'); document.body.classList.remove('dark'); } }
+    document.getElementById('darkModeToggle').onclick = () => { localStorage.setItem('darkMode', !document.body.classList.contains('dark')); applyTheme(); };
+    applyTheme();
+
+    // إغلاق المودالات العامة
+    document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', function(){ this.closest('.modal').classList.remove('open'); }));
+
+    // بدء التشغيل
+    (async () => {
+        await initDB();
+        currentUser = await checkSession();
+        if (!currentUser) return;
+        await renderFeed();
+    })();
+</script>
+</body>
+</html>
