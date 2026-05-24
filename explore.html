@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>استكشاف | Ramz-X</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 70px;
+            transition: background 0.3s;
+        }
+        body.dark { background-color: #000; }
+        body.light { background-color: #f5f5f5; }
+        body.light .explore-container,
+        body.light .header,
+        body.light .main-tabs,
+        body.light .search-filter-section,
+        body.light .explore-card,
+        body.light .bottom-sheet,
+        body.light .modal-content {
+            background-color: #fff;
+            color: #000;
+        }
+        body.light .header h1 { color: #000; }
+        body.light .main-tab { color: #555; }
+        body.light .main-tab.active { color: #ff0050; }
+        body.light .card-description,
+        body.light .card-stats { color: #555; }
+        body.light .card-category { background: #eef2ff; color: #2563eb; }
+        body.light .search-box { background: #f1f5f9; }
+        body.light .filter-btn { background: #f1f5f9; color: #334155; }
+        body.light .filter-btn.active { background: #3b82f6; color: white; }
+        body.light .action-btn { color: #555; border-color: #ccc; }
+        body.light .action-btn.liked { color: #dc2626; border-color: #dc2626; background: rgba(220,38,38,0.1); }
+        body.light .action-btn.favorited { color: #f59e0b; border-color: #f59e0b; background: rgba(245,158,11,0.1); }
+        .explore-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: #000;
+            min-height: 100vh;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #000;
+            border-bottom: 0.5px solid #2c2c2c;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            margin-left: 12px;
+        }
+        .header h1 { color: white; font-size: 20px; font-weight: bold; }
+        .dark-toggle { background: none; border: none; color: white; font-size: 22px; cursor: pointer; margin-right: auto; }
+        .main-tabs {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-bottom: 0.5px solid #2c2c2c;
+            background: #000;
+        }
+        .main-tab {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .main-tab.active { color: white; border-bottom-color: #ff0050; }
+        .search-filter-section {
+            background: #111;
+            border-radius: 2rem;
+            padding: 0.75rem 1.5rem;
+            margin: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .search-box {
+            flex: 2;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            background: #2c2c2c;
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+        }
+        .search-box i { color: #aaa; margin-left: 0.75rem; font-size: 1.1rem; }
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            width: 100%;
+            font-family: 'Cairo', sans-serif;
+            padding: 0.4rem 0;
+            color: white;
+        }
+        .search-box input::placeholder { color: #777; }
+        .filter-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .filter-btn {
+            background: #2c2c2c;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #aaa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.2s;
+        }
+        .filter-btn.active { background: #ff0050; color: white; }
+        .content-area { padding: 16px; }
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .explore-card {
+            background: #111;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: 0.2s;
+            border: 1px solid #2c2c2c;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .explore-card:hover { transform: translateY(-6px); box-shadow: 0 20px 30px -12px rgba(0,0,0,0.3); }
+        .card-img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            background-color: #2c2c2c;
+        }
+        .card-content { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
+        .card-category {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            background: #2c2c2c;
+            color: #ff0050;
+            width: fit-content;
+            margin-bottom: 0.75rem;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+            line-height: 1.3;
+            color: white;
+        }
+        .card-description {
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-stats {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 0.6rem;
+            border-top: 1px solid #2c2c2c;
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+        .stats-left, .stats-right { display: flex; gap: 0.6rem; align-items: center; }
+        .like-btn, .fav-btn {
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            background: none;
+            border: none;
+            color: inherit;
+        }
+        .like-btn.liked, .fav-btn.favorited { color: #ff0050; }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0;
+            padding: 0 16px;
+        }
+        .category-btn {
+            background: #2c2c2c;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.8rem;
+        }
+        .category-btn.active { background: #ff0050; }
+        .progress-toast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            border-radius: 40px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .progress-toast .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #2c2c2c;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-toast .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #ff0050;
+            transition: width 0.2s linear;
+        }
+        .progress-toast .progress-text {
+            font-size: 13px;
+            color: white;
+        }
+        body.light .progress-toast { background: #333; }
+        .bottom-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #ddd;
+            z-index: 30;
+        }
+        body.dark .bottom-footer { background-color: #111; border-top-color: #2c2c2c; }
+        .footer-button {
+            background: none;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #333;
+            text-decoration: none;
+        }
+        body.dark .footer-button { color: #aaa; }
+        .footer-button:hover {
+            color: #ff0050;
+            transform: scale(1.05);
+        }
+        .icon { font-size: 22px; display: block; margin-bottom: 4px; }
+        .label { font-size: 11px; }
+        #globalToast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            font-size: 14px;
+            border-left: 4px solid #fe2c55;
+        }
+        @media (max-width: 768px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .search-filter-section { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="explore-container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='home.html'"><i class="fas fa-arrow-right"></i></button>
+        <h1>استكشاف</h1>
+        <button class="dark-toggle" id="darkModeToggle"><i class="fas fa-moon"></i></button>
+    </div>
+
+    <div class="main-tabs" id="mainTabs">
+        <button class="main-tab active" data-tab="hot">المواضيع الساخنة</button>
+        <button class="main-tab" data-tab="topicDay">موضوع اليوم</button>
+        <button class="main-tab" data-tab="categories">التصنيفات</button>
+        <button class="main-tab" data-tab="events">مناسبات وأحداث</button>
+    </div>
+
+    <div class="search-filter-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="ابحث عن منشورات، هاشتاجات، أو مواضيع...">
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-type="all"><i class="fas fa-globe"></i> الكل</button>
+            <button class="filter-btn" data-type="article"><i class="fas fa-newspaper"></i> مقالات</button>
+            <button class="filter-btn" data-type="image"><i class="fas fa-image"></i> صور</button>
+        </div>
+    </div>
+
+    <div id="categoriesSection" class="category-buttons" style="display: none;"></div>
+
+    <div id="exploreContent" class="content-area"></div>
+</div>
+
+<div class="bottom-footer">
+    <a href="home.html" class="footer-button"><i class="fas fa-home icon"></i><div class="label">الرئيسية</div></a>
+    <a href="explore.html" class="footer-button"><i class="fas fa-compass icon"></i><div class="label">استكشاف</div></a>
+    <a href="create-post.html" class="footer-button"><i class="fas fa-plus-circle icon"></i><div class="label">إنشاء</div></a>
+    <a href="inbox.html" class="footer-button"><i class="fas fa-inbox icon"></i><div class="label">صندوق الوارد</div></a>
+    <a href="profile.html" class="footer-button"><i class="fas fa-user icon"></i><div class="label">الملف الشخصي</div></a>
+</div>
+
+<div id="globalToast"></div>
+<div id="progressToast" class="progress-toast">
+    <div class="progress-text" id="progressText">جاري التنفيذ...</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="common.js"></script>
+<script>
+    let currentUser = null;
+    let currentTab = 'hot';
+    let searchQuery = '';
+    let contentTypeFilter = 'all';
+    let currentCategory = null;
+    let allCategories = new Set();
+
+    function showProgress(message, duration = 1200) {
+        const toast = document.getElementById('progressToast');
+        const textEl = document.getElementById('progressText');
+        const fillEl = document.getElementById('progressFill');
+        textEl.innerText = message;
+        toast.style.opacity = '1';
+        fillEl.style.width = '0%';
+        const startTime = Date.now();
+        const interval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const percent = Math.min(100, (elapsed / duration) * 100);
+            fillEl.style.width = percent + '%';
+            if (percent >= 100) {
+                clearInterval(interval);
+                setTimeout(() => { toast.style.opacity = '0'; }, 200);
+            }
+        }, 20);
+    }
+
+    function getInteractionScore(post) {
+        const likes = post.likes_count || 0;
+        const comments = post.comments_count || 0;
+        const views = post.views_count || 0;
+        const reposts = post.reposts_count || 0;
+        const hoursSince = Math.max(0, (Date.now() - new Date(post.created_at).getTime()) / (1000 * 3600));
+        const engagement = (likes * 2) + (comments * 3) + (views / 50) + (reposts * 4);
+        return engagement / Math.pow(hoursSince + 2, 0.5);
+    }
+
+    async function fetchFilteredPosts() {
+        let posts = await fetchFeed();
+        if (!posts) return [];
+
+        if (contentTypeFilter !== 'all') {
+            posts = posts.filter(p => p.type === contentTypeFilter);
+        }
+
+        if (searchQuery.trim()) {
+            const q = searchQuery.trim().toLowerCase();
+            posts = posts.filter(p => 
+                p.title.toLowerCase().includes(q) || 
+                p.content.toLowerCase().includes(q) || 
+                (p.hashtag && p.hashtag.toLowerCase().includes(q))
+            );
+        }
+
+        const now = new Date();
+        if (currentTab === 'hot') {
+            posts = posts.filter(p => (now - new Date(p.created_at)) < 24 * 3600000);
+            posts.sort((a, b) => getInteractionScore(b) - getInteractionScore(a));
+        } else if (currentTab === 'topicDay') {
+            posts = posts.filter(p => (now - new Date(p.created_at)) < 48 * 3600000);
+            posts.sort((a, b) => getInteractionScore(b) - getInteractionScore(a));
+        } else if (currentTab === 'categories') {
+            if (currentCategory && currentCategory !== 'الكل') {
+                posts = posts.filter(p => p.category === currentCategory);
+            }
+        } else if (currentTab === 'events') {
+            posts = posts.filter(p => p.event && p.event.trim() !== "");
+        }
+
+        allCategories.clear();
+        posts.forEach(p => { if (p.category) allCategories.add(p.category); });
+        renderCategoryButtons();
+
+        return posts;
+    }
+
+    function renderCategoryButtons() {
+        const container = document.getElementById('categoriesSection');
+        if (currentTab !== 'categories') {
+            container.style.display = 'none';
+            return;
+        }
+        container.style.display = 'flex';
+        let html = `<button class="category-btn ${!currentCategory ? 'active' : ''}" data-cat="">الكل</button>`;
+        const sorted = Array.from(allCategories).sort();
+        sorted.forEach(cat => {
+            html += `<button class="category-btn ${currentCategory === cat ? 'active' : ''}" data-cat="${cat}">${escapeHtml(cat)}</button>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentCategory = btn.dataset.cat === '' ? null : btn.dataset.cat;
+                renderExplore();
+            });
+        });
+    }
+
+    async function renderExplore() {
+        const container = document.getElementById('exploreContent');
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-pulse"></i><p>جاري التحميل...</p></div>';
+        let posts = await fetchFilteredPosts();
+
+        if (!posts || posts.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>لا توجد منشورات</p></div>';
+            return;
+        }
+
+        const postIds = posts.map(p => p.id);
+        const { likes, favorites } = await getUserInteractions(postIds);
+
+        let html = '<div class="content-grid">';
+        for (let p of posts) {
+            const isLiked = likes[p.id] || false;
+            const isFav = favorites[p.id] || false;
+            const postType = p.type === 'article' ? 'مقال' : 'صورة';
+            const typeIcon = p.type === 'article' ? '<i class="fas fa-pen-fancy"></i>' : '<i class="fas fa-camera"></i>';
+            const likeClass = isLiked ? 'liked' : '';
+            const favClass = isFav ? 'favorited' : '';
+            const starIcon = isFav ? 'fas fa-star' : 'far fa-star';
+            html += `
+                <div class="explore-card" data-post-id="${p.id}">
+                    <img class="card-img" src="${p.image || 'https://picsum.photos/id/1/400/260'}" alt="${escapeHtml(p.title)}" loading="lazy" onerror="this.src='https://picsum.photos/id/1/400/260'">
+                    <div class="card-content">
+                        <div class="card-category">${typeIcon} ${escapeHtml(p.category || 'عام')} • ${postType}</div>
+                        <h3 class="card-title">${escapeHtml(p.title)}</h3>
+                        <p class="card-description">${escapeHtml((p.content || '').substring(0, 120))}...</p>
+                        <div class="card-stats">
+                            <div class="stats-left">
+                                <span><i class="fas fa-user"></i> ${escapeHtml(p.author_name)}</span>
+                                <span><i class="far fa-calendar-alt"></i> ${new Date(p.created_at).toLocaleDateString('ar')}</span>
+                            </div>
+                            <div class="stats-right">
+                                <button class="like-btn ${likeClass}" data-id="${p.id}" style="background:none; border:none; cursor:pointer;">
+                                    <i class="fas fa-heart"></i> <span class="count">${formatNumber(p.likes_count)}</span>
+                                </button>
+                                <button class="fav-btn ${favClass}" data-id="${p.id}" style="background:none; border:none; cursor:pointer;">
+                                    <i class="${starIcon}"></i> <span>${formatNumber(p.favorites_count)}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        html += '</div>';
+        container.innerHTML = html;
+
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.onclick = async (e) => {
+                e.stopPropagation();
+                showProgress('جاري تحديث الإعجاب...', 1000);
+                await toggleLike(parseInt(btn.dataset.id), btn);
+            };
+        });
+        document.querySelectorAll('.fav-btn').forEach(btn => {
+            btn.onclick = async (e) => {
+                e.stopPropagation();
+                showProgress('جاري تحديث المفضلة...', 1000);
+                await toggleFavorite(parseInt(btn.dataset.id), btn);
+            };
+        });
+        document.querySelectorAll('.explore-card').forEach(card => {
+            card.onclick = (e) => {
+                if (e.target.closest('.like-btn') || e.target.closest('.fav-btn')) return;
+                const postId = card.dataset.postId;
+                window.location.href = `home.html?post=${postId}`;
+            };
+        });
+    }
+
+    function setupSearchAndFilters() {
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderExplore();
+        });
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                contentTypeFilter = btn.dataset.type;
+                renderExplore();
+            });
+        });
+    }
+
+    function setTab(tabId) {
+        currentTab = tabId;
+        currentCategory = null;
+        document.querySelectorAll('.main-tab').forEach(tab => {
+            if (tab.dataset.tab === tabId) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+        renderExplore();
+    }
+
+    function applyTheme() {
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark');
+            document.body.classList.remove('light');
+        } else {
+            document.body.classList.add('light');
+            document.body.classList.remove('dark');
+        }
+    }
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+        localStorage.setItem('darkMode', !document.body.classList.contains('dark'));
+        applyTheme();
+    });
+    applyTheme();
+
+    (async () => {
+        await initDB();
+        currentUser = await checkSession();
+        setupSearchAndFilters();
+        document.querySelectorAll('.main-tab').forEach(tab => {
+            tab.addEventListener('click', () => setTab(tab.dataset.tab));
+        });
+        setTab('hot');
+    })();
+</script>
+</body>
+</html>
