@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>الملف الشخصي العام | Ramz-X</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 70px;
+            transition: background 0.3s;
+        }
+        body.dark { background-color: #000; }
+        body.light { background-color: #f5f5f5; }
+        body.light .public-profile-container,
+        body.light .header,
+        body.light .profile-header,
+        body.light .tabs,
+        body.light .post-item,
+        body.light .bottom-sheet,
+        body.light .modal-content {
+            background-color: #fff;
+            color: #000;
+        }
+        body.light .header h1,
+        body.light .profile-name,
+        body.light .post-title {
+            color: #000;
+        }
+        body.light .profile-bio,
+        body.light .profile-stats span,
+        body.light .post-excerpt {
+            color: #555;
+        }
+        body.light .tab {
+            color: #555;
+        }
+        body.light .tab.active {
+            color: #ff0050;
+        }
+        body.light .post-item {
+            border: 1px solid #eee;
+        }
+        .public-profile-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #000;
+            min-height: 100vh;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #000;
+            border-bottom: 0.5px solid #2c2c2c;
+        }
+        .back-btn, .dark-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .header h1 {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .profile-header {
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-bottom: 0.5px solid #2c2c2c;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2c2c2c;
+            margin-bottom: 12px;
+            border: 3px solid #ff0050;
+        }
+        .profile-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 4px;
+        }
+        .profile-username {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 12px;
+        }
+        .profile-bio {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 16px;
+            max-width: 300px;
+        }
+        .profile-stats {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .profile-stats span {
+            font-size: 14px;
+            color: #aaa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-stats strong {
+            font-size: 18px;
+            color: white;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        .btn {
+            border: none;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: #ff0050;
+            color: white;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ff0050;
+            color: #ff0050;
+        }
+        .btn-outline:hover {
+            background: rgba(255,0,80,0.1);
+        }
+        .social-links {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 12px 0 6px;
+        }
+        .social-links a {
+            color: #aaa;
+            font-size: 20px;
+            transition: 0.2s;
+        }
+        .social-links a:hover {
+            color: #ff0050;
+        }
+        .unique-url {
+            font-size: 12px;
+            color: #777;
+            margin-top: 4px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 0.5px solid #2c2c2c;
+            background: #000;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .tab.active {
+            color: white;
+            border-bottom-color: #ff0050;
+        }
+        .content-area {
+            padding: 16px;
+        }
+        .posts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .post-item {
+            background: #111;
+            border-radius: 16px;
+            padding: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #2c2c2c;
+        }
+        body.light .post-item {
+            background: #f9f9f9;
+            border: 1px solid #eee;
+        }
+        .post-item:hover {
+            transform: translateY(-2px);
+            border-color: #ff0050;
+        }
+        .post-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: #2c2c2c;
+        }
+        .post-title {
+            font-weight: bold;
+            color: white;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+        .post-excerpt {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+        .post-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #777;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        .bottom-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #ddd;
+            z-index: 30;
+        }
+        body.dark .bottom-footer {
+            background-color: #111;
+            border-top-color: #2c2c2c;
+        }
+        .footer-button {
+            background: none;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #333;
+            text-decoration: none;
+        }
+        body.dark .footer-button {
+            color: #aaa;
+        }
+        .footer-button:hover {
+            color: #ff0050;
+            transform: scale(1.05);
+        }
+        .icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .label {
+            font-size: 11px;
+        }
+        #globalToast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            font-size: 14px;
+            border-left: 4px solid #fe2c55;
+        }
+        @media (max-width: 640px) {
+            .profile-avatar { width: 80px; height: 80px; }
+            .profile-name { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="public-profile-container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='home.html'"><i class="fas fa-arrow-right"></i></button>
+        <h1>الملف الشخصي</h1>
+        <button class="dark-toggle" id="darkModeToggle"><i class="fas fa-moon"></i></button>
+    </div>
+
+    <div id="profileHeader" class="profile-header"></div>
+
+    <div class="tabs" id="profileTabs">
+        <button class="tab active" data-tab="posts">المنشورات</button>
+        <button class="tab" data-tab="favorites">المفضلات</button>
+    </div>
+
+    <div id="profileContent" class="content-area"></div>
+</div>
+
+<div class="bottom-footer">
+    <a href="home.html" class="footer-button"><i class="fas fa-home icon"></i><div class="label">الرئيسية</div></a>
+    <a href="explore.html" class="footer-button"><i class="fas fa-compass icon"></i><div class="label">استكشاف</div></a>
+    <a href="create-post.html" class="footer-button"><i class="fas fa-plus-circle icon"></i><div class="label">إنشاء</div></a>
+    <a href="inbox.html" class="footer-button"><i class="fas fa-inbox icon"></i><div class="label">صندوق الوارد</div></a>
+    <a href="profile.html" class="footer-button"><i class="fas fa-user icon"></i><div class="label">ملفي</div></a>
+</div>
+
+<div id="globalToast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="common.js"></script>
+<script>
+    let currentUser = null;
+    let viewedUser = null;
+    let currentTab = 'posts';
+
+    // دوال جلب البيانات (باستخدام دوال common.js إن أمكن، لكننا ننشئها محلياً للتكامل)
+    async function fetchUserData(userId) {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .single();
+        if (error) return null;
+        return data;
+    }
+
+    async function fetchUserByUsername(username) {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('username', username)
+            .single();
+        if (error) return null;
+        return data;
+    }
+
+    async function fetchUserTotalLikes(userId) {
+        const { data: posts, error } = await supabase
+            .from('posts')
+            .select('likes_count')
+            .eq('author_id', userId)
+            .eq('hidden', false);
+        if (error) return 0;
+        return posts.reduce((sum, p) => sum + (p.likes_count || 0), 0);
+    }
+
+    async function isUserFollowing(followerId, followingId) {
+        if (!followerId) return false;
+        const { data, error } = await supabase
+            .from('follows')
+            .select('id')
+            .eq('follower_id', followerId)
+            .eq('following_id', followingId)
+            .single();
+        return !!data;
+    }
+
+    async function fetchUserPosts(userId) {
+        const { data, error } = await supabase
+            .from('posts')
+            .select('*')
+            .eq('author_id', userId)
+            .eq('hidden', false)
+            .order('created_at', { ascending: false });
+        if (error) return [];
+        return data;
+    }
+
+    async function fetchUserFavorites(userId) {
+        const { data: favs, error } = await supabase
+            .from('favorites')
+            .select('post_id')
+            .eq('user_id', userId);
+        if (error) return [];
+        const postIds = favs.map(f => f.post_id);
+        if (postIds.length === 0) return [];
+        const { data: posts, error: postsError } = await supabase
+            .from('posts')
+            .select('*')
+            .in('id', postIds)
+            .eq('hidden', false);
+        if (postsError) return [];
+        return posts;
+    }
+
+    // عرض الملف الشخصي العام
+    async function renderProfile() {
+        if (!viewedUser) return;
+        const totalLikes = await fetchUserTotalLikes(viewedUser.id);
+        const isOwnProfile = (currentUser && currentUser.id === viewedUser.id);
+        const social = viewedUser.social || {};
+
+        let socialHtml = '';
+        for (let [platform, value] of Object.entries(social)) {
+            let icon = '';
+            if (platform === 'email') icon = 'fas fa-envelope';
+            else if (platform === 'facebook') icon = 'fab fa-facebook';
+            else if (platform === 'twitter') icon = 'fab fa-twitter';
+            else if (platform === 'instagram') icon = 'fab fa-instagram';
+            else if (platform === 'tiktok') icon = 'fab fa-tiktok';
+            else if (platform === 'youtube') icon = 'fab fa-youtube';
+            else icon = 'fas fa-link';
+            socialHtml += `<a href="#" onclick="showToast('رابط ${platform}: ${value}')"><i class="${icon}"></i></a>`;
+        }
+
+        let followButtonHtml = '';
+        if (!isOwnProfile && currentUser) {
+            const isFollowing = await isUserFollowing(currentUser.id, viewedUser.id);
+            followButtonHtml = `<div class="action-buttons">
+                <button class="btn btn-primary follow-action-btn">${isFollowing ? 'إلغاء المتابعة' : 'متابعة'}</button>
+                <button class="btn btn-outline message-btn">رسالة</button>
+            </div>`;
+        }
+
+        const headerHtml = `
+            <img src="${viewedUser.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" class="profile-avatar" onerror="this.src='https://randomuser.me/api/portraits/lego/1.jpg'">
+            <div class="profile-name">${escapeHtml(viewedUser.full_name || viewedUser.username)} <i class="fas fa-check-circle" style="color:#3b82f6;"></i></div>
+            <div class="profile-username">@${escapeHtml(viewedUser.unique_name || viewedUser.username)}</div>
+            <div class="profile-bio">${escapeHtml(viewedUser.bio || '')}</div>
+            <div class="profile-stats">
+                <span><strong>${formatNumber(viewedUser.followers_count || 0)}</strong> متابع</span>
+                <span><strong>${formatNumber(viewedUser.following_count || 0)}</strong> متبعهم</span>
+                <span><strong>${formatNumber(totalLikes)}</strong> إعجاب</span>
+            </div>
+            ${followButtonHtml}
+            <div class="social-links">${socialHtml}</div>
+            <div class="unique-url">🔗 الرابط الفريد: /user/${viewedUser.unique_name || viewedUser.username}</div>
+        `;
+        document.getElementById('profileHeader').innerHTML = headerHtml;
+
+        // ربط أحداث الأزرار (متابعة ورسالة)
+        const followBtn = document.querySelector('.follow-action-btn');
+        if (followBtn && !isOwnProfile && currentUser) {
+            followBtn.onclick = async () => {
+                const isFollowing = followBtn.innerText === 'إلغاء المتابعة';
+                if (!isFollowing) {
+                    const { error } = await supabase.from('follows').insert({ follower_id: currentUser.id, following_id: viewedUser.id });
+                    if (error) { showToast(error.message, true); return; }
+                    followBtn.innerText = 'إلغاء المتابعة';
+                    viewedUser.followers_count = (viewedUser.followers_count || 0) + 1;
+                    const followersSpan = document.querySelector('.profile-stats span:first-child strong');
+                    if (followersSpan) followersSpan.innerText = formatNumber(viewedUser.followers_count);
+                    showToast(`✅ تمت متابعة ${viewedUser.username}`);
+                } else {
+                    const { error } = await supabase.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', viewedUser.id);
+                    if (error) { showToast(error.message, true); return; }
+                    followBtn.innerText = 'متابعة';
+                    viewedUser.followers_count = (viewedUser.followers_count || 0) - 1;
+                    const followersSpan = document.querySelector('.profile-stats span:first-child strong');
+                    if (followersSpan) followersSpan.innerText = formatNumber(viewedUser.followers_count);
+                    showToast(`✅ تم إلغاء متابعة ${viewedUser.username}`);
+                }
+            };
+        }
+        const messageBtn = document.querySelector('.message-btn');
+        if (messageBtn) {
+            messageBtn.onclick = () => {
+                window.location.href = `inbox.html?user=${viewedUser.id}`;
+            };
+        }
+    }
+
+    // عرض المنشورات / المفضلات
+    async function renderContent() {
+        const container = document.getElementById('profileContent');
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-pulse"></i><p>جاري التحميل...</p></div>';
+        if (!viewedUser) return;
+
+        if (currentTab === 'posts') {
+            const posts = await fetchUserPosts(viewedUser.id);
+            if (posts.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="far fa-newspaper"></i><p>لا توجد منشورات</p></div>';
+                return;
+            }
+            let html = '<div class="posts-grid">';
+            for (let p of posts) {
+                const shortContent = p.content.length > 100 ? p.content.substring(0, 100) + '...' : p.content;
+                html += `
+                    <div class="post-item" data-post-id="${p.id}">
+                        ${p.image ? `<img class="post-img" src="${p.image}" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">` : ''}
+                        <div class="post-title">${escapeHtml(p.title)} <span style="font-size:10px; background:#2c2c2c; padding:2px 8px; border-radius:20px;">${p.category || 'عام'}</span></div>
+                        <div class="post-excerpt">${escapeHtml(shortContent)}</div>
+                        <div class="post-meta">
+                            <span><i class="fas fa-heart"></i> ${formatNumber(p.likes_count)}</span>
+                            <span><i class="fas fa-comment"></i> ${p.comments_count || 0}</span>
+                            <span><i class="fas fa-eye"></i> ${formatNumber(p.views_count || 0)}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            container.innerHTML = html;
+            document.querySelectorAll('.post-item').forEach(el => {
+                el.addEventListener('click', () => window.location.href = `home.html?post=${el.dataset.postId}`);
+            });
+        }
+        else if (currentTab === 'favorites') {
+            const favPosts = await fetchUserFavorites(viewedUser.id);
+            if (favPosts.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="far fa-star"></i><p>لا توجد منشورات في المفضلات</p></div>';
+                return;
+            }
+            let html = '<div class="posts-grid">';
+            for (let p of favPosts) {
+                const shortContent = p.content.length > 100 ? p.content.substring(0, 100) + '...' : p.content;
+                html += `
+                    <div class="post-item" data-post-id="${p.id}">
+                        ${p.image ? `<img class="post-img" src="${p.image}" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">` : ''}
+                        <div class="post-title">${escapeHtml(p.title)} <span style="font-size:10px; background:#2c2c2c; padding:2px 8px; border-radius:20px;">${p.category || 'عام'}</span></div>
+                        <div class="post-excerpt">${escapeHtml(shortContent)}</div>
+                        <div class="post-meta">
+                            <span><i class="fas fa-heart"></i> ${formatNumber(p.likes_count)}</span>
+                            <span><i class="fas fa-comment"></i> ${p.comments_count || 0}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            container.innerHTML = html;
+            document.querySelectorAll('.post-item').forEach(el => {
+                el.addEventListener('click', () => window.location.href = `home.html?post=${el.dataset.postId}`);
+            });
+        }
+    }
+
+    function setTab(tabId) {
+        currentTab = tabId;
+        document.querySelectorAll('.tab').forEach(tab => {
+            if (tab.dataset.tab === tabId) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+        renderContent();
+    }
+
+    // تهيئة الصفحة: جلب المستخدم من الرابط
+    async function initPublicProfile() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userIdParam = urlParams.get('user');
+        if (userIdParam) {
+            if (userIdParam.includes('-')) {
+                viewedUser = await fetchUserData(userIdParam);
+            } else {
+                viewedUser = await fetchUserByUsername(userIdParam);
+            }
+        }
+        if (!viewedUser) {
+            document.getElementById('profileHeader').innerHTML = '<div class="empty-state" style="padding:20px;"><i class="fas fa-exclamation-triangle"></i><p>المستخدم غير موجود</p></div>';
+            document.getElementById('profileContent').innerHTML = '';
+            return;
+        }
+        await renderProfile();
+        setTab('posts');
+    }
+
+    // الوضع الليلي
+    function applyTheme() {
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark');
+            document.body.classList.remove('light');
+        } else {
+            document.body.classList.add('light');
+            document.body.classList.remove('dark');
+        }
+    }
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+        localStorage.setItem('darkMode', !document.body.classList.contains('dark'));
+        applyTheme();
+    });
+    applyTheme();
+
+    // بدء التشغيل
+    (async () => {
+        await initDB();               // تهيئة الاتصال بقاعدة البيانات (من common.js)
+        currentUser = await checkSession(); // قد يكون null إذا لم يكن مسجلاً
+        await initPublicProfile();
+    })();
+</script>
+</body>
+</html>
