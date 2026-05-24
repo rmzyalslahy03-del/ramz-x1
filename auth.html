@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>تسجيل الدخول | Ramz-X</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 70px;
+            transition: background 0.3s;
+        }
+        body.dark { background-color: #000; }
+        body.light { background-color: #f5f5f5; }
+        body.light .header, body.light .auth-container, body.light .auth-card, body.light .bottom-footer {
+            background-color: #fff;
+            color: #000;
+        }
+        body.light .header h1, body.light .auth-title, body.light .logo { color: #000; }
+        body.light .input-group input { background: #f1f5f9; border-color: #ccc; color: #000; }
+        body.light .input-group label { color: #555; }
+        body.light .tab-btn { color: #555; }
+        body.light .tab-btn.active { color: #ff0050; }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #000;
+            border-bottom: 0.5px solid #2c2c2c;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #ff0050);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            cursor: pointer;
+        }
+        .dark-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        .auth-container {
+            max-width: 450px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .auth-card {
+            background: #111;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid #2c2c2c;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #2c2c2c;
+        }
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 0.8rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #aaa;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .tab-btn.active {
+            color: #ff0050;
+            border-bottom-color: #ff0050;
+        }
+        .auth-form {
+            display: none;
+        }
+        .auth-form.active {
+            display: block;
+        }
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            color: #ccc;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid #2c2c2c;
+            background: #1a1a1a;
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.2s;
+        }
+        .input-group input:focus {
+            border-color: #ff0050;
+            box-shadow: 0 0 0 2px rgba(255,0,80,0.2);
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 2rem;
+            background: #ff0050;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            transition: 0.2s;
+        }
+        .btn-submit:hover {
+            background: #e00046;
+            transform: translateY(-2px);
+        }
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+            color: #777;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #2c2c2c;
+        }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+        .google-btn, .guest-btn, .trial-btn {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 2rem;
+            background: transparent;
+            border: 1px solid #ff0050;
+            color: #ff0050;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .google-btn:hover, .guest-btn:hover, .trial-btn:hover {
+            background: rgba(255,0,80,0.1);
+            transform: translateY(-2px);
+        }
+        .trial-btn {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+        .trial-btn:hover {
+            background: rgba(245,158,11,0.1);
+        }
+        .bottom-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #ddd;
+            z-index: 30;
+        }
+        body.dark .bottom-footer {
+            background-color: #111;
+            border-top-color: #2c2c2c;
+        }
+        .footer-button {
+            background: none;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #333;
+            text-decoration: none;
+        }
+        body.dark .footer-button {
+            color: #aaa;
+        }
+        .footer-button:hover {
+            color: #ff0050;
+            transform: scale(1.05);
+        }
+        .icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .label {
+            font-size: 11px;
+        }
+        .progress-toast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            border-radius: 40px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .progress-toast .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #2c2c2c;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-toast .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #ff0050;
+            transition: width 0.2s linear;
+        }
+        .progress-toast .progress-text {
+            font-size: 13px;
+            color: white;
+        }
+        body.light .progress-toast { background: #333; }
+        #globalToast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 40px;
+            text-align: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            font-size: 14px;
+            border-left: 4px solid #fe2c55;
+        }
+        @media (max-width: 640px) {
+            .auth-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo" onclick="window.location.href='index.html'">Ramz-X</div>
+    <button class="dark-toggle" id="darkModeToggle"><i class="fas fa-moon"></i></button>
+</div>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="login">تسجيل الدخول</button>
+            <button class="tab-btn" data-tab="register">إنشاء حساب</button>
+        </div>
+
+        <!-- نموذج تسجيل الدخول -->
+        <div id="loginForm" class="auth-form active">
+            <div class="input-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="loginEmail" placeholder="example@ramz-x.com" autocomplete="email">
+            </div>
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="loginPassword" placeholder="********" autocomplete="current-password">
+            </div>
+            <button class="btn-submit" id="loginBtn">تسجيل الدخول</button>
+            <div class="divider">أو</div>
+            <button class="google-btn" id="googleLoginBtn"><i class="fab fa-google"></i> تسجيل الدخول عبر Google</button>
+            <button class="trial-btn" id="trialGuestBtn"><i class="fas fa-user-clock"></i> تجربة مجانية لمدة 6 أشهر</button>
+        </div>
+
+        <!-- نموذج إنشاء حساب -->
+        <div id="registerForm" class="auth-form">
+            <div class="input-group">
+                <label>الاسم الكامل</label>
+                <input type="text" id="registerName" placeholder="سارة أحمد" autocomplete="name">
+            </div>
+            <div class="input-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="registerEmail" placeholder="example@ramz-x.com" autocomplete="email">
+            </div>
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="registerPassword" placeholder="********" autocomplete="new-password">
+            </div>
+            <div class="input-group">
+                <label>تأكيد كلمة المرور</label>
+                <input type="password" id="registerConfirmPassword" placeholder="********" autocomplete="new-password">
+            </div>
+            <button class="btn-submit" id="registerBtn">إنشاء حساب</button>
+            <div class="divider">أو</div>
+            <button class="google-btn" id="googleRegisterBtn"><i class="fab fa-google"></i> التسجيل عبر Google</button>
+            <button class="trial-btn" id="trialGuestBtn2"><i class="fas fa-user-clock"></i> تجربة مجانية لمدة 6 أشهر</button>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-footer">
+    <a href="index.html" class="footer-button"><i class="fas fa-home icon"></i><div class="label">الرئيسية</div></a>
+    <a href="explore.html" class="footer-button"><i class="fas fa-compass icon"></i><div class="label">استكشاف</div></a>
+    <a href="create-post.html" class="footer-button"><i class="fas fa-plus-circle icon"></i><div class="label">إنشاء</div></a>
+    <a href="inbox.html" class="footer-button"><i class="fas fa-inbox icon"></i><div class="label">صندوق الوارد</div></a>
+    <a href="profile.html" class="footer-button"><i class="fas fa-user icon"></i><div class="label">الملف الشخصي</div></a>
+</div>
+
+<div id="globalToast"></div>
+<div id="progressToast" class="progress-toast">
+    <div class="progress-text" id="progressText">جاري التنفيذ...</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="common.js"></script>
+<script>
+    // دوال مساعدة للـ auth.html
+    function showProgress(message, duration = 1500) {
+        const toast = document.getElementById('progressToast');
+        const textEl = document.getElementById('progressText');
+        const fillEl = document.getElementById('progressFill');
+        textEl.innerText = message;
+        toast.style.opacity = '1';
+        fillEl.style.width = '0%';
+        const startTime = Date.now();
+        const interval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const percent = Math.min(100, (elapsed / duration) * 100);
+            fillEl.style.width = percent + '%';
+            if (percent >= 100) {
+                clearInterval(interval);
+                setTimeout(() => { toast.style.opacity = '0'; }, 200);
+            }
+        }, 20);
+    }
+
+    async function handleLogin(email, password) {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) { showToast(error.message, true); return false; }
+        // مزامنة المستخدم مع جدول users
+        const { data: profile } = await supabase.from('users').select('*').eq('id', data.user.id).single();
+        if (profile) {
+            localStorage.setItem('currentUser', JSON.stringify(profile));
+        } else {
+            // إذا لم يكن موجوداً (حالة نادرة) نقوم بمزامنته
+            await syncUserToDatabase(data.user);
+            const { data: newProfile } = await supabase.from('users').select('*').eq('id', data.user.id).single();
+            if (newProfile) localStorage.setItem('currentUser', JSON.stringify(newProfile));
+        }
+        showToast(`مرحباً ${data.user.email}، تم تسجيل الدخول بنجاح!`);
+        setTimeout(() => window.location.href = 'home.html', 1500);
+        return true;
+    }
+
+    async function handleRegister(name, email, password) {
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: name,
+                    avatar_url: `https://randomuser.me/api/portraits/lego/${Math.floor(Math.random() * 10) + 1}.jpg`
+                }
+            }
+        });
+        if (error) { showToast(error.message, true); return false; }
+        if (data.user) {
+            await syncUserToDatabase(data.user);
+            showToast(`تم إنشاء الحساب بنجاح! مرحباً ${name}`);
+            setTimeout(() => window.location.href = 'home.html', 1500);
+        } else {
+            showToast('تم إرسال رابط التأكيد إلى بريدك الإلكتروني. يرجى تأكيد البريد ثم تسجيل الدخول.');
+        }
+        return true;
+    }
+
+    async function handleGoogleLogin() {
+        const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+        if (error) showToast(error.message, true);
+    }
+
+    async function handleTrialGuest() {
+        showProgress('جاري إنشاء حساب تجريبي لمدة 6 أشهر...', 1500);
+        const guestUser = await createGuestUser();
+        if (guestUser) {
+            setTimeout(() => window.location.href = 'home.html', 1500);
+        } else {
+            showToast("حدث خطأ أثناء إنشاء الحساب التجريبي، حاول مرة أخرى", true);
+        }
+    }
+
+    // ربط التبويبات
+    const loginTab = document.querySelector('[data-tab="login"]');
+    const registerTab = document.querySelector('[data-tab="register"]');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    loginTab.addEventListener('click', () => {
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        loginForm.classList.add('active');
+        registerForm.classList.remove('active');
+    });
+    registerTab.addEventListener('click', () => {
+        registerTab.classList.add('active');
+        loginTab.classList.remove('active');
+        registerForm.classList.add('active');
+        loginForm.classList.remove('active');
+    });
+
+    // أزرار الإجراءات
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if (!email || !password) {
+            showToast('الرجاء إدخال البريد الإلكتروني وكلمة المرور', true);
+            return;
+        }
+        showProgress('جاري تسجيل الدخول...', 1500);
+        await handleLogin(email, password);
+    });
+
+    document.getElementById('registerBtn').addEventListener('click', async () => {
+        const name = document.getElementById('registerName').value.trim();
+        const email = document.getElementById('registerEmail').value.trim();
+        const password = document.getElementById('registerPassword').value;
+        const confirm = document.getElementById('registerConfirmPassword').value;
+        if (!name || !email || !password) {
+            showToast('الرجاء ملء جميع الحقول', true);
+            return;
+        }
+        if (password !== confirm) {
+            showToast('كلمة المرور وتأكيدها غير متطابقين', true);
+            return;
+        }
+        if (password.length < 6) {
+            showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', true);
+            return;
+        }
+        showProgress('جاري إنشاء الحساب...', 2000);
+        await handleRegister(name, email, password);
+    });
+
+    document.getElementById('googleLoginBtn').addEventListener('click', () => {
+        showProgress('جاري التوجيه إلى Google...', 1000);
+        handleGoogleLogin();
+    });
+    document.getElementById('googleRegisterBtn').addEventListener('click', () => {
+        showProgress('جاري التوجيه إلى Google...', 1000);
+        handleGoogleLogin();
+    });
+
+    // أزرار التجربة المجانية (في كلا التبويبين)
+    document.getElementById('trialGuestBtn').addEventListener('click', handleTrialGuest);
+    document.getElementById('trialGuestBtn2').addEventListener('click', handleTrialGuest);
+
+    // الوضع الليلي
+    function applyTheme() {
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark');
+            document.body.classList.remove('light');
+        } else {
+            document.body.classList.add('light');
+            document.body.classList.remove('dark');
+        }
+    }
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+        localStorage.setItem('darkMode', !document.body.classList.contains('dark'));
+        applyTheme();
+    });
+    applyTheme();
+
+    // التحقق من الجلسة الحالية وإعادة التوجيه إذا كان مسجلاً
+    (async () => {
+        await initDB(); // لتحميل البيانات مسبقاً (اختياري)
+        const user = await checkSession();
+        if (user) {
+            window.location.href = 'home.html';
+        }
+    })();
+</script>
+</body>
+</html>
